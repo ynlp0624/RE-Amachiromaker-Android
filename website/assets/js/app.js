@@ -183,14 +183,27 @@
   });
   /* -------------------------------------------------- 多源智能下载 */
   // 所有节点都部署了同一份站点；前端并行测速后从最快的源下载。
+  // 想加节点：在下面数组里加一项即可（apk 字段可覆盖默认的安装包路径）。
   var MIRRORS = [
     { id: 'srv3', label: '主节点 · 独立线路', base: 'https://gallery.shizuku.plus/' },
-    { id: 'srv2', label: '镜像节点 · 备用线路', base: 'https://gallery-s2.shizuku.plus/' }
+    { id: 'srv2', label: '镜像节点 · 备用线路', base: 'https://gallery-s2.shizuku.plus/' },
+    {
+      id: 'github',
+      label: 'GitHub 源 · 经加速代理',
+      // 用 gh-proxy 转发：大陆可直连、且两端都带 CORS，测速与下载走同一条路径
+      base: 'https://gh-proxy.com/https://raw.githubusercontent.com/ynlp0624/RE-Amachiromaker-Android/main/',
+      apk: 'https://gh-proxy.com/https://github.com/ynlp0624/RE-Amachiromaker-Android/releases/download/v1.0.0/RE-Amachiromaker-v1.0.0-android.apk'
+    }
   ];
   var APK_PATH = 'assets/download/RE-Amachiromaker-v1.0.0-android.apk';
   var PROBE_URL = 'speedtest.bin';
   var PROBE_TIMEOUT = 7000;      // 单个节点最多等 7 秒
+  var PROBE_DEADLINE = 5500;     // 到点即汇总，不再等慢节点
   var BEST_KEY = 'amachiromaker-best-mirror';
+
+  function apkUrlOf(mirror) {
+    return mirror.apk || (mirror.base + APK_PATH);
+  }
 
   var smartBtn = document.getElementById('smartDownload');
   var toggleBtn = document.getElementById('mirrorToggle');
@@ -309,7 +322,7 @@
   }
 
   function startDownload(mirror, auto) {
-    var url = mirror.base + APK_PATH;
+    var url = apkUrlOf(mirror);
     var a = document.createElement('a');
     a.href = url;
     a.setAttribute('download', 'RE-Amachiromaker-v1.0.0-android.apk');
@@ -336,42 +349,69 @@
     listEl.hidden = false;
     statusEl.hidden = false;
     statusEl.className = 'mirror__status';
-    statusEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>正在并行测速，最多等 6 秒…</span>';
+    statusEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>正在并行测速，最多等 ' +
+      Math.round(PROBE_DEADLINE / 1000) + ' 秒…</span>';
     renderNodes(state);
 
-    var finished = 0;
-    state.forEach(function (entry, index) {
+    var settled = false;
+
+    function settle() {
+      if (settled) return;
+      settled = true;
+
+      // 到点还没回话的节点：有数据就按时长估算，没数据算它不可用
+      state.forEach(function (entry) {
+        if (entry.status !== 'probing') return;
+        if ((entry.progress || 0) > 65536) {
+          entry.status = 'done';
+          entry.partial = true;
+          entry.speed = entry.progress / (PROBE_DEADLINE / 1000);
+        } else {
+          entry.status = 'dead';
+          entry.reason = '未响应';
+        }
+      });
+      renderNodes(state);
+
+      var alive = state.filter(function (e) { return e.status === 'done' && e.speed > 0; });
+      if (!alive.length) {
+        statusEl.className = 'mirror__status';
+        statusEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i><span>所有节点都没测通，直接用当前页面所在节点下载。</span>';
+        startDownload({ id: 'self', label: '当前节点', base: location.origin + '/', apk: APK_PATH }, autoDownload);
+        return;
+      }
+      alive.sort(function (a, b) { return b.speed - a.speed; });
+      alive[0].fastest = true;
+      writeBest(alive[0].mirror.id);
+      renderNodes(state);
+      if (autoDownload) {
+        startDownload(alive[0].mirror, true);
+      } else {
+        statusEl.className = 'mirror__status is-done';
+        statusEl.innerHTML = '<i class="fa-solid fa-circle-check"></i><span>最快是「' + alive[0].mirror.label +
+          '」（' + formatSpeed(alive[0].speed) + '），点上方按钮即可从它下载。</span>';
+      }
+    }
+
+    var pending = state.length;
+    state.forEach(function (entry) {
       probe(entry.mirror, function (bytes) {
+        if (settled) return;
         entry.progress = bytes;
         renderNodes(state);
       }).then(function (result) {
+        if (settled) return;
         entry.status = result.ok ? 'done' : 'dead';
         entry.speed = result.speed;
+        entry.partial = result.partial;
         entry.reason = result.reason || '不可用';
-        finished += 1;
+        pending -= 1;
         renderNodes(state);
-
-        if (finished === state.length) {
-          var alive = state.filter(function (e) { return e.status === 'done'; });
-          if (!alive.length) {
-            statusEl.className = 'mirror__status';
-            statusEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i><span>所有节点都没测通，直接使用当前页面所在节点下载。</span>';
-            startDownload({ id: 'self', label: '当前节点', base: location.origin + '/' }, autoDownload);
-            return;
-          }
-          alive.sort(function (a, b) { return b.speed - a.speed; });
-          alive[0].fastest = true;
-          writeBest(alive[0].mirror.id);
-          renderNodes(state);
-          if (autoDownload) startDownload(alive[0].mirror, true);
-          else {
-            statusEl.className = 'mirror__status is-done';
-            statusEl.innerHTML = '<i class="fa-solid fa-circle-check"></i><span>最快是「' + alive[0].mirror.label +
-              '」（' + formatSpeed(alive[0].speed) + '），点上方按钮即可从它下载。</span>';
-          }
-        }
+        if (pending === 0) settle();
       });
     });
+
+    window.setTimeout(settle, PROBE_DEADLINE);
   }
 
   if (smartBtn) {
@@ -389,7 +429,7 @@
     if (!mirror) return;
     var links = document.querySelectorAll('a[href$="RE-Amachiromaker-v1.0.0-android.apk"]');
     Array.prototype.forEach.call(links, function (a) {
-      var target = mirror.base + APK_PATH;
+      var target = apkUrlOf(mirror);
       if (a.href !== target) a.href = target;
     });
   })();
