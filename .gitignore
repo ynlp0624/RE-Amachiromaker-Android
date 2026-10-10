@@ -1,0 +1,23 @@
+# ---- Android / Gradle ----
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/.idea/
+android/*.iml
+android/keystore/
+android/app/release/
+*.jks
+*.keystore
+
+# ---- 构建产物与素材（见 README 说明） ----
+android/app/src/main/assets/image_maker/
+*.apk
+*.aab
+*.psd
+
+# ---- 杂项 ----
+tmp/
+.DS_Store
+Thumbs.db
+*.log

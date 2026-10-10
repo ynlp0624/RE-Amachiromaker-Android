@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RE:Amachiromaker · 安卓原生版</title>
+<meta name="description" content="把下线的捏脸网站 RE:Amachiromaker 重做成安卓原生应用（Kotlin + Jetpack Compose，无 WebView 套壳）。25 个部位、1111 张贴图全部内置，离线可用，支持导出 PNG 与分层 PSD。">
+<meta name="theme-color" content="#3e93e0">
+<meta property="og:type" content="website">
+<meta property="og:title" content="RE:Amachiromaker · 安卓原生版">
+<meta property="og:description" content="把下线的捏脸网站重做成安卓原生应用：Kotlin + Jetpack Compose，无 WebView 套壳，25 个部位、1111 张贴图内置，支持导出 PNG 与分层 PSD。">
+<meta property="og:image" content="assets/img/shizuku-avatar.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/img/favicon.png">
+<link rel="stylesheet" href="assets/css/fontawesome.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<a class="skip-link" href="#main">跳到主要内容</a>
+
+<header class="nav" id="nav">
+  <div class="container nav__inner">
+    <a class="brand" href="#top">
+      <span class="brand__mark"><i class="fa-solid fa-cat"></i></span>
+      <span class="brand__text">
+        RE:Amachiromaker
+        <small>安卓原生版</small>
+      </span>
+    </a>
+
+    <nav class="nav__links" id="navLinks">
+      <a href="#features">特性</a>
+      <a href="#gallery">截图</a>
+      <a href="#layers">图层</a>
+      <a href="#tech">技术</a>
+      <a href="#download">下载</a>
+      <a href="#about">关于</a>
+    </nav>
+
+    <div class="nav__actions">
+      <button class="icon-btn" id="themeToggle" type="button" aria-label="切换深浅色主题" title="切换主题">
+        <i class="fa-solid fa-moon"></i>
+      </button>
+      <a class="btn btn--primary btn--sm hide-sm" href="#download">
+        <i class="fa-solid fa-download"></i><span>下载 APK</span>
+      </a>
+      <button class="icon-btn nav__burger" id="menuToggle" type="button" aria-label="打开菜单">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ================= HERO ================= -->
+  <section class="hero" id="top">
+    <div class="hero__glow" aria-hidden="true"></div>
+    <div class="container hero__inner">
+      <div class="hero__copy">
+        <span class="pill"><i class="fa-brands fa-android"></i> Kotlin + Jetpack Compose</span>
+        <h1>把下线的捏脸工坊<br><span class="grad">做成真正的安卓 App</span></h1>
+        <p class="lead">
+          网页版被重写成了原生应用：界面用 Compose 搭，贴图直接解码进内存合成，PSD 由手写编码器生成。
+          25 个部位、1111 张贴图全部打包进安装包，<strong>没有网络请求、没有 WebView</strong>。
+        </p>
+        <div class="hero__cta">
+          <a class="btn btn--primary btn--lg" href="assets/download/RE-Amachiromaker-v1.0.0-android.apk" download>
+            <i class="fa-solid fa-download"></i><span>下载 APK</span>
+          </a>
+          <a class="btn btn--ghost btn--lg" href="#gallery">
+            <i class="fa-solid fa-images"></i><span>先看截图</span>
+          </a>
+        </div>
+        <ul class="hero__meta">
+          <li><i class="fa-solid fa-tag"></i> v1.0.0</li>
+          <li><i class="fa-solid fa-weight-hanging"></i> 39.15 MB</li>
+          <li><i class="fa-solid fa-mobile-screen"></i> Android 7.0+</li>
+          <li><i class="fa-solid fa-circle-check"></i> 无网络权限</li>
+        </ul>
+      </div>
+
+      <div class="hero__art">
+        <div class="art-card">
+          <img src="assets/img/shizuku-avatar.png" alt="用本应用捏出的角色形象" width="600" height="600">
+          <div class="art-card__caption">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            <span>本应用实际导出的 600 × 600 成品图</span>
+          </div>
+        </div>
+        <div class="art-chip art-chip--1"><i class="fa-solid fa-layer-group"></i> 16 层 PSD</div>
+        <div class="art-chip art-chip--2"><i class="fa-solid fa-database"></i> 1111 张贴图</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= STATS ================= -->
+  <section class="stats container" aria-label="项目数据">
+    <div class="stat"><b>25</b><span>可换部位</span></div>
+    <div class="stat"><b>864</b><span>可选贴图</span></div>
+    <div class="stat"><b>1111</b><span>内置素材</span></div>
+    <div class="stat"><b>600<small>px</small></b><span>输出画布</span></div>
+    <div class="stat"><b>0</b><span>联网请求</span></div>
+  </section>
+
+  <!-- ================= FEATURES ================= -->
+  <section class="section container" id="features">
+    <header class="section__head">
+      <span class="eyebrow"><i class="fa-solid fa-star"></i> 特性</span>
+      <h2>原生该有的样子</h2>
+      <p>不是把网页塞进浏览器控件，而是用安卓自己的零件重做了一遍。</p>
+    </header>
+
+    <div class="grid grid--3">
+      <article class="card">
+        <span class="card__icon"><i class="fa-solid fa-mobile-screen-button"></i></span>
+        <h3>原生 Compose 界面</h3>
+        <p>标签页、贴图网格、色板、对话框全部由 Kotlin + Jetpack Compose 绘制，跟系统主题、手势、旋转保持一致。</p>
+      </article>
+      <article class="card">
+        <span class="card__icon"><i class="fa-solid fa-hard-drive"></i></span>
+        <h3>完全离线</h3>
+        <p>32 MB 素材随安装包一起走，安装后无需联网即可使用；安装包内没有申请 INTERNET 权限。</p>
+      </article>
+      <article class="card">
+        <span class="card__icon"><i class="fa-solid fa-layer-group"></i></span>
+        <h3>分层 PSD 导出</h3>
+        <p>每个部位写成一个独立图层，带图层名与坐标，Photoshop、Krita、GIMP、Photopea 都能继续编辑。</p>
+      </article>
+      <article class="card">
+        <span class="card__icon"><i class="fa-solid fa-palette"></i></span>
+        <h3>换色系统</h3>
+        <p>同一款贴图自带多套配色，圆形色板点一下就换；发色、瞳色、背景色都是同一套机制。</p>
+      </article>
+      <article class="card">
+        <span class="card__icon"><i class="fa-solid fa-file-code"></i></span>
+        <h3>预设互通</h3>
+        <p>搭配可导出成 JSON，也能直接载入网页版导出的预设，格式完全一致。</p>
+      </article>
+      <article class="card">
+        <span class="card__icon"><i class="fa-solid fa-image"></i></span>
+        <h3>保存到相册</h3>
+        <p>600 × 600 的成品图写进 <code>Pictures/Amachiromaker/</code>，相册应用里立刻能看到。</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ================= GALLERY ================= -->
+  <section class="section container" id="gallery">
+    <header class="section__head">
+      <span class="eyebrow"><i class="fa-solid fa-camera-retro"></i> 截图</span>
+      <h2>真机运行记录</h2>
+      <p>下面每一张都是在 Android 14 模拟器里实际跑出来的画面，点击可放大。</p>
+    </header>
+
+    <div class="gallery" id="galleryGrid">
+      <figure class="shot" data-title="主界面 · 默认形象">
+        <img src="assets/img/shot-main.png" alt="应用主界面，预览区显示默认形象" loading="lazy">
+        <figcaption><i class="fa-solid fa-window-maximize"></i> 主界面</figcaption>
+      </figure>
+      <figure class="shot" data-title="载入预设 · 捏出的雫">
+        <img src="assets/img/shot-shizuku-dark.png" alt="载入预设后的角色形象" loading="lazy">
+        <figcaption><i class="fa-solid fa-user-astronaut"></i> 载入预设</figcaption>
+      </figure>
+      <figure class="shot" data-title="浅色模式 · 部位与贴图">
+        <img src="assets/img/shot-tab.png" alt="浅色模式下切换部位标签" loading="lazy">
+        <figcaption><i class="fa-solid fa-table-cells-large"></i> 部位切换</figcaption>
+      </figure>
+      <figure class="shot" data-title="深色模式">
+        <img src="assets/img/shot-dark.png" alt="深色模式界面" loading="lazy">
+        <figcaption><i class="fa-solid fa-moon"></i> 深色模式</figcaption>
+      </figure>
+      <figure class="shot" data-title="换色 · 背景切换">
+        <img src="assets/img/shot-recolor.png" alt="更换背景贴图后的效果" loading="lazy">
+        <figcaption><i class="fa-solid fa-palette"></i> 换色生效</figcaption>
+      </figure>
+      <figure class="shot" data-title="导出 PSD · 系统保存面板">
+        <img src="assets/img/shot-psd-save.png" alt="保存 PSD 时的系统文件面板" loading="lazy">
+        <figcaption><i class="fa-solid fa-floppy-disk"></i> 导出 PSD</figcaption>
+      </figure>
+      <figure class="shot" data-title="首次启动 · 使用须知">
+        <img src="assets/img/shot-notice.png" alt="首次启动时的使用须知对话框" loading="lazy">
+        <figcaption><i class="fa-solid fa-circle-info"></i> 使用须知</figcaption>
+      </figure>
+      <figure class="shot" data-title="素材总览 · 发型部件">
+        <img src="assets/img/atlas-hair.png" alt="发型部件贴图总览" loading="lazy">
+        <figcaption><i class="fa-solid fa-shapes"></i> 素材总览</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ================= LAYERS ================= -->
+  <section class="section container" id="layers">
+    <header class="section__head">
+      <span class="eyebrow"><i class="fa-solid fa-layer-group"></i> 图层</span>
+      <h2>导出的 PSD 长这样</h2>
+      <p>下面这张是用第三方 PSD 解析器把应用导出的文件重新展开的结果：16 个图层、名字和位置都对得上。</p>
+    </header>
+
+    <div class="panel">
+      <img src="assets/img/layers.png" alt="PSD 图层拆解图" loading="lazy">
+    </div>
+
+    <div class="grid grid--3 mt">
+      <div class="mini">
+        <i class="fa-solid fa-signature"></i>
+        <div>
+          <h4>图层名来自部位</h4>
+          <p>背景 / 後ろ髪 / 顔 / 右目 / 獣耳 / 服 …… 与界面里的部位一一对应。</p>
+        </div>
+      </div>
+      <div class="mini">
+        <i class="fa-solid fa-crop-simple"></i>
+        <div>
+          <h4>按实际边界裁剪</h4>
+          <p>只保存贴图占用的矩形区域，文件更小，打开更快。</p>
+        </div>
+      </div>
+      <div class="mini">
+        <i class="fa-solid fa-code"></i>
+        <div>
+          <h4>零依赖写出</h4>
+          <p>PSD 容器由 Kotlin 手写生成，没有引入任何第三方图像库。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TECH ================= -->
+  <section class="section container" id="tech">
+    <header class="section__head">
+      <span class="eyebrow"><i class="fa-solid fa-code-compare"></i> 技术对照</span>
+      <h2>网页版做了什么，这里换成了什么</h2>
+      <p>同样的数据与素材，不同的实现方式。</p>
+    </header>
+
+    <div class="table-wrap">
+      <table class="compare">
+        <thead>
+          <tr><th>环节</th><th>网页版</th><th>安卓原生版</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>界面</td><td>React + HTML + CSS</td><td>Kotlin + Jetpack Compose</td></tr>
+          <tr><td>叠图合成</td><td>浏览器 Canvas</td><td>android.graphics.Canvas → Bitmap</td></tr>
+          <tr><td>PSD 生成</td><td>ag-psd（浏览器）</td><td>手写 PSD 编码器（Kotlin）</td></tr>
+          <tr><td>素材来源</td><td>本地 / CDN 文件</td><td>APK assets，随包分发</td></tr>
+          <tr><td>进度保存</td><td>localStorage</td><td>SharedPreferences</td></tr>
+          <tr><td>文件导出</td><td>浏览器下载</td><td>MediaStore 相册 + 系统文件选择器</td></tr>
+          <tr><td>网络</td><td>首次加载需联网</td><td>不申请网络权限</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= DOWNLOAD ================= -->
+  <section class="section container" id="download">
+    <header class="section__head">
+      <span class="eyebrow"><i class="fa-solid fa-cloud-arrow-down"></i> 下载</span>
+      <h2>拿到安装包</h2>
+      <p>单文件 APK，无需安装框架、无需登录、无需联网。</p>
+    </header>
+
+    <div class="mirror" id="mirror">
+      <div class="mirror__intro">
+        <span class="mirror__icon"><i class="fa-solid fa-bolt"></i></span>
+        <div>
+          <h3>多源智能下载</h3>
+          <p class="muted">
+            安装包同时部署在多个节点上。点击测速后，浏览器会并行拉取各节点的一份小样本，
+            算出实时速度并自动从最快的节点开始下载；最快节点会记在本机，下次优先使用。
+          </p>
+        </div>
+      </div>
+
+      <div class="mirror__actions">
+        <button class="btn btn--primary btn--lg" id="smartDownload" type="button">
+          <i class="fa-solid fa-gauge-high"></i><span>测速并下载</span>
+        </button>
+        <button class="btn btn--ghost" id="mirrorToggle" type="button" aria-expanded="false">
+          <i class="fa-solid fa-server"></i><span>查看节点</span>
+        </button>
+      </div>
+
+      <ul class="mirror__list" id="mirrorList" hidden></ul>
+      <p class="mirror__status" id="mirrorStatus" hidden></p>
+    </div>
+
+    <div class="download">
+      <div class="download__main">
+        <span class="download__icon"><i class="fa-brands fa-android"></i></span>
+        <div class="download__info">
+          <h3>RE-Amachiromaker v1.0.0</h3>
+          <p class="muted">Android 7.0 及以上 · 39.15 MB · 本地签名（非商店包，安装时选择「仍要安装」即可）</p>
+          <div class="hash">
+            <i class="fa-solid fa-fingerprint"></i>
+            <code>SHA-256 cdc7269d4f165e481d6f7fe13290b77f786dce95e7ccf2bcd23b279f8e80940d</code>
+            <button class="copy-btn" type="button" data-copy="cdc7269d4f165e481d6f7fe13290b77f786dce95e7ccf2bcd23b279f8e80940d">
+              <i class="fa-solid fa-copy"></i><span>复制</span>
+            </button>
+          </div>
+        </div>
+        <a class="btn btn--primary btn--lg download__btn" href="assets/download/RE-Amachiromaker-v1.0.0-android.apk" download>
+          <i class="fa-solid fa-download"></i><span>下载 APK</span>
+        </a>
+      </div>
+
+      <div class="download__extra">
+        <a class="file-card" href="assets/download/shizuku-nekoha.psd" download>
+          <span class="file-card__icon"><i class="fa-solid fa-layer-group"></i></span>
+          <span class="file-card__text">
+            <b>shizuku-nekoha.psd</b>
+            <small>分层源文件 · 10.3 MB</small>
+          </span>
+          <i class="fa-solid fa-arrow-down file-card__go"></i>
+        </a>
+        <a class="file-card" href="assets/download/shizuku-preset.json" download>
+          <span class="file-card__icon"><i class="fa-solid fa-file-code"></i></span>
+          <span class="file-card__text">
+            <b>shizuku-preset.json</b>
+            <small>搭配预设 · 2.1 KB</small>
+          </span>
+          <i class="fa-solid fa-arrow-down file-card__go"></i>
+        </a>
+        <a class="file-card" href="assets/img/shizuku-avatar.png" download>
+          <span class="file-card__icon"><i class="fa-solid fa-image"></i></span>
+          <span class="file-card__text">
+            <b>shizuku-nekoha.png</b>
+            <small>成品图 · 600 × 600</small>
+          </span>
+          <i class="fa-solid fa-arrow-down file-card__go"></i>
+        </a>
+      </div>
+
+      <ol class="steps">
+        <li><span>1</span> 把 APK 传到手机（数据线、聊天工具、网盘都行）。</li>
+        <li><span>2</span> 点击安装，系统询问「允许安装未知应用」时选择允许。</li>
+        <li><span>3</span> 打开应用，同意使用须知，即可开始捏。</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ================= ABOUT ================= -->
+  <section class="section container" id="about">
+    <header class="section__head">
+      <span class="eyebrow"><i class="fa-solid fa-circle-info"></i> 关于</span>
+      <h2>出处与版权</h2>
+      <p>这个项目是二改产物，请连同原作者信息一起保留。</p>
+    </header>
+
+    <div class="grid grid--2">
+      <article class="card card--soft">
+        <h3><i class="fa-solid fa-diagram-project"></i> 项目脉络</h3>
+        <ul class="link-list">
+          <li>
+            <span>原项目</span>
+            <a href="https://github.com/charlie0129/amachiromaker" target="_blank" rel="noopener">Charlie Chiangm · amachiromaker</a>
+          </li>
+          <li>
+            <span>二改分支</span>
+            <a href="https://github.com/NekoQiye/RE-Amachiromaker" target="_blank" rel="noopener">NekoQiye / RE-Amachiromaker</a>
+          </li>
+          <li>
+            <span>画师</span>
+            <a href="https://amashiro.com/" target="_blank" rel="noopener">甘城なつき · amashiro.com</a>
+          </li>
+        </ul>
+      </article>
+
+      <article class="card card--soft">
+        <h3><i class="fa-solid fa-scale-balanced"></i> 使用条款</h3>
+        <ul class="rules">
+          <li>贴图版权归甘城なつき所有，<strong>禁止商用或二次售卖</strong>。</li>
+          <li>允许二改，但需在 GitHub 拉分支并标注原项目地址。</li>
+          <li>禁止把素材说成自己绘制，禁止直接用本项目生成的图片售卖。</li>
+          <li>本页面的 APK 为同人性质的离线移植版，与原始作者无隶属关系。</li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="container footer__inner">
+    <div>
+      <span class="brand__mark brand__mark--sm"><i class="fa-solid fa-cat"></i></span>
+      <b>RE:Amachiromaker · 安卓原生版</b>
+      <p class="muted">Kotlin + Jetpack Compose 重写 · 素材打包于安装包内 · 无网络请求</p>
+    </div>
+    <nav class="footer__links">
+      <a href="#features">特性</a>
+      <a href="#gallery">截图</a>
+      <a href="#download">下载</a>
+      <a href="#about">版权</a>
+      <a href="https://github.com/NekoQiye/RE-Amachiromaker" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i> 原项目</a>
+    </nav>
+  </div>
+</footer>
+
+<!-- 图片灯箱 -->
+<div class="lightbox" id="lightbox" hidden>
+  <button class="lightbox__close" id="lightboxClose" type="button" aria-label="关闭"><i class="fa-solid fa-xmark"></i></button>
+  <button class="lightbox__nav lightbox__nav--prev" id="lightboxPrev" type="button" aria-label="上一张"><i class="fa-solid fa-chevron-left"></i></button>
+  <figure class="lightbox__figure">
+    <img id="lightboxImg" src="" alt="">
+    <figcaption id="lightboxCap"></figcaption>
+  </figure>
+  <button class="lightbox__nav lightbox__nav--next" id="lightboxNext" type="button" aria-label="下一张"><i class="fa-solid fa-chevron-right"></i></button>
+</div>
+
+<button class="to-top" id="toTop" type="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up"></i></button>
+
+<script src="assets/js/app.js"></script>
+</body>
+</html>
