@@ -69,11 +69,12 @@ cd android
 
 ### 素材说明
 
-`android/app/src/main/assets/image_maker/` 下的 1111 张贴图（约 32 MB）**没有纳入本仓库**，因为它们是画师作品，
-且体积较大。缺失时应用会启动但画面空白。获取方式（任选其一）：
+`android/app/src/main/assets/image_maker/` 下的 1111 张贴图（约 32 MB）**没有纳入本仓库，也不在任何发行附件里**：
+图片版权归画师所有，单独打包再分发并不合适，体积也较大。
 
-1. 从上游仓库 [NekoQiye/RE-Amachiromaker](https://github.com/NekoQiye/RE-Amachiromaker) 的 `app/image_maker/` 目录复制过来；
-2. 下载本仓库 Release 附件中的 `amachiromaker-assets.zip`，解压到 `android/app/src/main/assets/`。
+缺失素材时应用仍可启动，只是画面是空白的。需要的同学请从上游项目自行获取：
+
+- [NekoQiye/RE-Amachiromaker](https://github.com/NekoQiye/RE-Amachiromaker) → `app/image_maker/`
 
 目录结构需要保持为 `assets/image_maker/168503/<部位ID>/<i_*.png|ii_*.png|p_*.png>`。
 
