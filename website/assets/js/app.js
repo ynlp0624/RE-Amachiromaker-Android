@@ -185,6 +185,15 @@
   // 所有节点都部署了同一份站点；前端并行测速后从最快的源下载。
   // 想加节点：在下面数组里加一项即可（apk 字段可覆盖默认的安装包路径）。
   var MIRRORS = [
+    {
+      id: 'gitcode',
+      label: 'GitCode 源 · 国内直连',
+      // GitCode 的 CDN 不带 CORS，前端读不到字节数；样本大小已知，改用「no-cors 下载计时」估算速度
+      noCors: true,
+      probeBytes: 524288,
+      probe: 'https://api.gitcode.com/api/v5/repos/gcw_YiSvwnI0/RE-Amachiromaker-Android/releases/v1.0.0/attach_files/speedtest.bin/download',
+      apk: 'https://gitcode.com/gcw_YiSvwnI0/RE-Amachiromaker-Android/releases/download/v1.0.0/RE-Amachiromaker-v1.0.0-android.apk'
+    },
     { id: 'srv3', label: '主节点 · 独立线路', base: 'https://gallery.shizuku.plus/' },
     { id: 'srv2', label: '镜像节点 · 备用线路', base: 'https://gallery-s2.shizuku.plus/' },
     {
@@ -231,7 +240,7 @@
 
   // 拉取样本数据并统计真实耗时（含首个字节延迟）；超时但已有足够数据时按已完成部分估算
   function probe(mirror, onProgress) {
-    var url = mirror.base + PROBE_URL + '?t=' + Date.now();
+    var url = (mirror.probe || (mirror.base + PROBE_URL)) + '?t=' + Date.now();
     var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
     var received = 0;
     var started = (window.performance && performance.now) ? performance.now() : Date.now();
@@ -243,6 +252,22 @@
       received = bytes;
       if (onProgress) onProgress(bytes);
     };
+
+    // 没有 CORS 的节点（如 GitCode 的 CDN）：样本大小已知，用整体耗时反推速度
+    if (mirror.noCors) {
+      var expected = mirror.probeBytes || 524288;
+      return fetch(url, { mode: 'no-cors', cache: 'no-store' })
+        .then(function () {
+          window.clearTimeout(timer);
+          var seconds = Math.max((now() - started) / 1000, 0.001);
+          count(expected);
+          return { ok: true, bytes: expected, seconds: seconds, speed: expected / seconds, approximate: true };
+        })
+        .catch(function () {
+          window.clearTimeout(timer);
+          return { ok: false, reason: '无法连接', speed: 0 };
+        });
+    }
 
     return fetch(url, { cache: 'no-store', signal: controller ? controller.signal : undefined })
       .then(function (res) {
@@ -309,7 +334,7 @@
       speed.className = 'node__speed';
       speed.textContent = entry.status === 'probing' ? '测速中…'
         : entry.status === 'dead' ? entry.reason
-        : (entry.partial ? '约 ' : '') + formatSpeed(entry.speed);
+        : (entry.partial || entry.approximate ? '约 ' : '') + formatSpeed(entry.speed);
 
       var bar = document.createElement('span');
       bar.className = 'node__bar';
@@ -411,6 +436,7 @@
         entry.status = result.ok ? 'done' : 'dead';
         entry.speed = result.speed;
         entry.partial = result.partial;
+        entry.approximate = result.approximate;
         entry.reason = result.reason || '不可用';
         pending -= 1;
         renderNodes(state);
