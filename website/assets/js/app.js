@@ -189,8 +189,15 @@
     { id: 'srv2', label: '镜像节点 · 备用线路', base: 'https://gallery-s2.shizuku.plus/' },
     {
       id: 'github',
-      label: 'GitHub 源 · 经加速代理',
-      // 用 gh-proxy 转发：大陆可直连、且两端都带 CORS，测速与下载走同一条路径
+      label: 'GitHub 源 · 官方直连',
+      // 测速走 raw（带 CORS），下载走 Release 直链；两者都是 GitHub 官方域名
+      base: 'https://raw.githubusercontent.com/ynlp0624/RE-Amachiromaker-Android/main/',
+      apk: 'https://github.com/ynlp0624/RE-Amachiromaker-Android/releases/download/v1.0.0/RE-Amachiromaker-v1.0.0-android.apk'
+    },
+    {
+      id: 'github-proxy',
+      label: 'GitHub 源 · 加速代理（备选）',
+      // 直连被阻断时才用得上，走 gh-proxy 转发
       base: 'https://gh-proxy.com/https://raw.githubusercontent.com/ynlp0624/RE-Amachiromaker-Android/main/',
       apk: 'https://gh-proxy.com/https://github.com/ynlp0624/RE-Amachiromaker-Android/releases/download/v1.0.0/RE-Amachiromaker-v1.0.0-android.apk'
     }
