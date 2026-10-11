@@ -24,7 +24,9 @@ object Compositor {
         canvas.drawColor(android.graphics.Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
         val paint = Paint(Paint.FILTER_BITMAP_FLAG).apply { isAntiAlias = true }
 
-        for (layer in selections) {
+        // 按修正后的顺序绘制（项圈压在衣服下、追加发垂在衣服上）
+        for (index in LayerOrder.orderFor(selections.size)) {
+            val layer = selections.getOrNull(index) ?: continue
             if (layer.url.isEmpty()) continue
             val bmp = loader(layer.url) ?: continue
             canvas.drawBitmap(bmp, layer.x.toFloat(), layer.y.toFloat(), paint)
