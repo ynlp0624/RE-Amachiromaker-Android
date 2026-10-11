@@ -36,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
@@ -47,7 +48,10 @@ import cc.nekoha.amachiromaker.data.MakerState
 import cc.nekoha.amachiromaker.export.Exports
 import cc.nekoha.amachiromaker.export.PsdLayer
 import cc.nekoha.amachiromaker.export.PsdWriter
+import cc.nekoha.amachiromaker.export.SvgLayer
+import cc.nekoha.amachiromaker.export.SvgWriter
 import cc.nekoha.amachiromaker.render.Compositor
+import cc.nekoha.amachiromaker.render.LayerOrder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -120,6 +124,24 @@ fun MakerScreen(
         }
     }
 
+    val svgSaver = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument("image/svg+xml")
+    ) { uri ->
+        if (uri == null) return@rememberLauncherForActivityResult
+        busyText = "雫在打包 SVG 图层…"
+        scope.launch {
+            try {
+                val bytes = withContext(Dispatchers.Default) { buildSvgBytes(state, store) }
+                withContext(Dispatchers.IO) { Exports.writeBytes(context, uri, bytes) }
+                toast("SVG 装好啦，每个部位都是一个图层喵~ (${bytes.size / 1024} KB)")
+            } catch (t: Throwable) {
+                toast("SVG 打包失败：${t.message}")
+            } finally {
+                busyText = null
+            }
+        }
+    }
+
     Box(Modifier.fillMaxSize()) {
         Column(
             Modifier
@@ -165,6 +187,9 @@ fun MakerScreen(
                     },
                     onSavePsd = {
                         psdSaver.launch("amachiromaker-output-${System.currentTimeMillis()}.psd")
+                    },
+                    onSaveSvg = {
+                        svgSaver.launch("amachiromaker-output-${System.currentTimeMillis()}.svg")
                     },
                     onLoadPreset = { presetLoader.launch(arrayOf("*/*")) },
                     onSavePreset = {
@@ -316,6 +341,7 @@ private fun PreviewPane(
     onReset: () -> Unit,
     onSavePng: () -> Unit,
     onSavePsd: () -> Unit,
+    onSaveSvg: () -> Unit,
     onLoadPreset: () -> Unit,
     onSavePreset: () -> Unit
 ) {
@@ -337,7 +363,9 @@ private fun PreviewPane(
                     bitmap = preview.asImageBitmap(),
                     contentDescription = "合成预览",
                     modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Fit
+                    contentScale = ContentScale.Fit,
+                    // 预览偶尔会放大到容器尺寸，用高质量重采样，边缘更平滑
+                    filterQuality = FilterQuality.High
                 )
             } else {
                 Text(
@@ -356,6 +384,7 @@ private fun PreviewPane(
         }
         Spacer(Modifier.height(8.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            FlatButton("保存 SVG", onSaveSvg, Modifier.weight(1f))
             FlatButton("载入预设", onLoadPreset, Modifier.weight(1f))
             FlatButton("导出预设", onSavePreset, Modifier.weight(1f))
         }
@@ -417,14 +446,36 @@ private fun PickerPane(
     }
 }
 
+/** 生成 SVG：每个部位一个带名字的图层组，坐标与 PNG / PSD 导出完全一致。 */
+private fun buildSvgBytes(state: MakerState, store: AssetStore): ByteArray {
+    val layers = ArrayList<SvgLayer>()
+    for (index in LayerOrder.orderFor(state.parts.size)) {
+        val part = state.parts.getOrNull(index) ?: continue
+        val selection = state.selections.getOrNull(index) ?: continue
+        if (selection.url.isEmpty()) continue
+        val bitmap = store.decodeBitmap(selection.url) ?: continue
+        val cropped = cropToCanvas(bitmap, selection.x, selection.y) ?: continue
+        layers.add(
+            SvgLayer(
+                name = part.pNm.ifBlank { "layer-$index" },
+                left = cropped.left,
+                top = cropped.top,
+                bitmap = cropped.bitmap
+            )
+        )
+    }
+    return SvgWriter.write(Compositor.CANVAS_SIZE, Compositor.CANVAS_SIZE, layers)
+}
+
 /** Builds the layered PSD: one cropped layer per part, plus the flattened preview. */
 private fun buildPsdBytes(state: MakerState, store: AssetStore): ByteArray {
     val layers = ArrayList<PsdLayer>()
-    state.parts.forEachIndexed { index, part ->
-        val selection = state.selections.getOrNull(index) ?: return@forEachIndexed
-        if (selection.url.isEmpty()) return@forEachIndexed
-        val bitmap = store.decodeBitmap(selection.url) ?: return@forEachIndexed
-        val cropped = cropToCanvas(bitmap, selection.x, selection.y) ?: return@forEachIndexed
+    for (index in LayerOrder.orderFor(state.parts.size)) {
+        val part = state.parts.getOrNull(index) ?: continue
+        val selection = state.selections.getOrNull(index) ?: continue
+        if (selection.url.isEmpty()) continue
+        val bitmap = store.decodeBitmap(selection.url) ?: continue
+        val cropped = cropToCanvas(bitmap, selection.x, selection.y) ?: continue
         layers.add(
             PsdLayer(
                 name = part.pNm.ifBlank { "layer-$index" },
