@@ -65,7 +65,7 @@
           25 个部位、1111 张贴图全部打包进安装包，<strong>没有网络请求、没有 WebView</strong>。
         </p>
         <div class="hero__cta">
-          <a class="btn btn--primary btn--lg" href="assets/download/RE-Amachiromaker-v1.0.0-android.apk" download>
+          <a class="btn btn--primary btn--lg" href="assets/download/RE-Amachiromaker-v1.0.1-android.apk" download>
             <i class="fa-solid fa-download"></i><span>下载 APK</span>
           </a>
           <a class="btn btn--ghost btn--lg" href="#gallery">
@@ -73,7 +73,7 @@
           </a>
         </div>
         <ul class="hero__meta">
-          <li><i class="fa-solid fa-tag"></i> v1.0.0</li>
+          <li><i class="fa-solid fa-tag"></i> v1.0.1</li>
           <li><i class="fa-solid fa-weight-hanging"></i> 39.15 MB</li>
           <li><i class="fa-solid fa-mobile-screen"></i> Android 7.0+</li>
           <li><i class="fa-solid fa-circle-check"></i> 无网络权限</li>
@@ -289,17 +289,17 @@
       <div class="download__main">
         <span class="download__icon"><i class="fa-brands fa-android"></i></span>
         <div class="download__info">
-          <h3>RE-Amachiromaker v1.0.0</h3>
+          <h3>RE-Amachiromaker v1.0.1</h3>
           <p class="muted">Android 7.0 及以上 · 39.15 MB · 本地签名（非商店包，安装时选择「仍要安装」即可）</p>
           <div class="hash">
             <i class="fa-solid fa-fingerprint"></i>
-            <code>SHA-256 cdc7269d4f165e481d6f7fe13290b77f786dce95e7ccf2bcd23b279f8e80940d</code>
-            <button class="copy-btn" type="button" data-copy="cdc7269d4f165e481d6f7fe13290b77f786dce95e7ccf2bcd23b279f8e80940d">
+            <code>SHA-256 bf761bfa5e6c6fa7ca8b02977f74534b202eadd84d4010c898f6dabf7e636479</code>
+            <button class="copy-btn" type="button" data-copy="bf761bfa5e6c6fa7ca8b02977f74534b202eadd84d4010c898f6dabf7e636479">
               <i class="fa-solid fa-copy"></i><span>复制</span>
             </button>
           </div>
         </div>
-        <a class="btn btn--primary btn--lg download__btn" href="assets/download/RE-Amachiromaker-v1.0.0-android.apk" download>
+        <a class="btn btn--primary btn--lg download__btn" href="assets/download/RE-Amachiromaker-v1.0.1-android.apk" download>
           <i class="fa-solid fa-download"></i><span>下载 APK</span>
         </a>
       </div>
@@ -386,6 +386,232 @@
     </div>
   </section>
 
+  <!-- ================= 彩蛋：踩坑实录（地址栏 #bugs 可见） ================= -->
+  <section class="egg" id="easterEgg" hidden>
+    <div class="container">
+      <header class="section__head">
+        <span class="eyebrow"><i class="fa-solid fa-bug"></i> 隐藏页 · 踩坑实录</span>
+        <h2>这一路上踩过的坑</h2>
+        <p>从把这个网页包变成安卓应用，到把它发到四个下载源，下面这些是实际踩过的每一个坑，按类别整理，一条没删。</p>
+        <div class="egg__actions">
+          <button class="btn btn--ghost btn--sm" id="eggBack" type="button">
+            <i class="fa-solid fa-arrow-left"></i><span>回到主页面</span>
+          </button>
+          <span class="egg__count" id="eggCount"></span>
+        </div>
+      </header>
+
+      <div class="egg__group">
+        <h3><i class="fa-solid fa-hammer"></i> 安卓构建</h3>
+        <div class="egg__grid">
+          <article class="egg-card">
+            <h4>密钥文件找不到</h4>
+            <p class="egg-card__sym">Keystore file 'app/keystore/local.jks' not found</p>
+            <p class="egg-card__why">Gradle 里的 <code>file()</code> 是相对模块目录解析的，而密钥放在项目根目录。</p>
+            <p class="egg-card__fix"><i class="fa-solid fa-wrench"></i> 改成 <code>rootProject.file("keystore/local.jks")</code></p>
+          </article>
+          <article class="egg-card">
+            <h4>那个「没有传 loader 参数」</h4>
+            <p class="egg-card__sym">No value passed for parameter 'loader'</p>
+            <p class="egg-card__why">Kotlin 的尾随 lambda 只能对应最后一个参数，而 <code>loader</code> 被写在了中间。</p>
+            <p class="egg-card__fix"><i class="fa-solid fa-wrench"></i> 把 lambda 参数挪到参数表最末尾</p>
+          </article>
+          <article class="egg-card">
+            <h4>两个 items 打架</h4>
+            <p class="egg-card__sym">Argument type mismatch: List&lt;LayerItem&gt; but Int was expected</p>
+            <p class="egg-card__why">网格用 <code>LazyVerticalGrid</code> 的 <code>items</code>，横向滚动用 <code>LazyRow</code> 的 <code>items</code>，同名不同包，编译器挑错了那个。</p>
+            <p class="egg-card__fix"><i class="fa-solid fa-wrench"></i> 用 <code>import ... as gridItems</code> 起别名区分</p>
+          </article>
+          <article class="egg-card">
+            <h4>release 卡在 lint 下载</h4>
+            <p class="egg-card__sym">Could not download lint-31.6.1.jar ... Read timed out</p>
+            <p class="egg-card__why">打包 release 会先跑 lint，而 lint 工具包不在缓存里，需要现场去 dl.google.com 拉，结果超时。</p>
+            <p class="egg-card__fix"><i class="fa-solid fa-wrench"></i> <code>lint { checkReleaseBuilds = false }</code>，本地打包不需要它</p>
+          </article>
+        </div>
+      </div>
+
+      <div class="egg__group">
+        <h3><i class="fa-solid fa-layer-group"></i> 图层与渲染</h3>
+        <div class="egg__grid">
+          <article class="egg-card">
+            <h4>项圈被头发「穿过去」了</h4>
+            <p class="egg-card__sym">项圈两端凭空消失，像被垂发切断</p>
+            <p class="egg-card__why">原站数据里项圈排在衣服之后，改成压在衣服下之后，又被侧发（横髪）挡住两端——逐层拆解才定位到。</p>
+            <p class="egg-card__fix"><i class="fa-solid fa-wrench"></i> 最终顺序：<strong>项圈在头发之上、衣服之下</strong>，露脖衣服完整可见，高领衣服仍自然遮住</p>
+          </article>
+          <article class="egg-card">
+            <h4>项圈浮在高领衣服外面</h4>
+            <p class="egg-card__sym">项圈看起来像系在衣服领子上</p>
+            <p class="egg-card__why">原站把「チョーカー」排在「服」之后，于是项圈永远画在衣服最上层。</p>
+            <p class="egg-card__fix"><i class="fa-solid fa-wrench"></i> 重排绘制顺序（预览、PNG、PSD、SVG 四处同步）</p>
+          </article>
+          <article class="egg-card">
+            <h4>预览有点发虚</h4>
+            <p class="egg-card__sym">600px 的图在手机上被撑到 900 物理像素</p>
+            <p class="egg-card__why"><code>ContentScale.Fit</code> 会放大位图，重采样质量又一般。</p>
+            <p class="egg-card__fix"><i class="fa-solid fa-wrench"></i> 加 <code>FilterQuality.High</code>，缩放更平滑</p>
+          </article>
+          <article class="egg-card">
+            <h4>追加发的颜色不对劲</h4>
+            <p class="egg-card__sym">选蓝发，追加发却是白的</p>
+            <p class="egg-card__why">「+髪」这个部位的素材本身就是浅色系，色板里没有能匹配蓝发的档位。</p>
+            <p class="egg-card__fix"><i class="fa-solid fa-wrench"></i> 结论：不选它（记录在案，属数据本身的限制）</p>
+          </article>
+          <article class="egg-card">
+            <h4>袖的位置差点误判</h4>
+            <p class="egg-card__sym">看上去像"胸前凭空一块布"</p>
+            <p class="egg-card__why">肉眼看像在胸口，实际量了非透明区域才发现它在画布底部（y=531~599）。</p>
+            <p class="egg-card__fix"><i class="fa-solid fa-wrench"></i> 顺序没错，属于袖子该在的位置，保留</p>
+          </article>
+          <article class="egg-card">
+            <h4>一个部位缺了一种颜色</h4>
+            <p class="egg-card__sym">後ろ髪 itmId=1211336 只有 9 种颜色（其他款都是 10 种）</p>
+            <p class="egg-card__why">上游数据本身的缺口，不是移植造成的。</p>
+            <p class="egg-card__fix"><i class="fa-solid fa-wrench"></i> 记录在案；864 个素材文件本身零缺失</p>
+          </article>
+        </div>
+      </div>
+
+      <div class="egg__group">
+        <h3><i class="fa-solid fa-image"></i> 素材与版权</h3>
+        <div class="egg__grid">
+          <article class="egg-card">
+            <h4>衣服凭空多出黑描边</h4>
+            <p class="egg-card__sym">矢量化之后，干净的素色上衣长出了轮廓线</p>
+            <p class="egg-card__why">插画是软渐变笔触，矢量化算法会把它理解成"色块 + 轮廓"，把柔和过渡描成硬边。</p>
+            <p class="egg-card__fix"><i class="fa-solid fa-wrench"></i> 放弃矢量化素材；改为保留原图 + 新增 SVG 分层导出</p>
+          </article>
+          <article class="egg-card">
+            <h4>那包素材不能发</h4>
+            <p class="egg-card__sym">差点把 1111 张贴图打包成 Release 附件</p>
+            <p class="egg-card__why">图片版权归画师所有，"应用整体分发"和"素材单独打包再分发"是两回事。</p>
+            <p class="egg-card__fix"><i class="fa-solid fa-wrench"></i> 素材包立即撤除；仓库与所有发行附件都不含素材</p>
+          </article>
+          <article class="egg-card">
+            <h4>矢量化的假描边（同上）与本条合并说明</h4>
+            <p class="egg-card__why">另一条教训：位图素材放大只能"补细节"，无法真的无损。AI 超分能提升观感，但会轻微强化线条。</p>
+            <p class="egg-card__fix"><i class="fa-solid fa-wrench"></i> 决定：素材保持原样，把无损需求交给 SVG 分层导出</p>
+          </article>
+        </div>
+      </div>
+
+      <div class="egg__group">
+        <h3><i class="fa-solid fa-screwdriver-wrench"></i> 工具链的坑</h3>
+        <div class="egg__grid">
+          <article class="egg-card">
+            <h4>双引号被吞掉</h4>
+            <p class="egg-card__sym">bash: 未预期的记号 "(" 附近有语法错误</p>
+            <p class="egg-card__why">PowerShell 往 ssh 传内联脚本时会把引号吃掉，脚本到了远端已经变形。</p>
+            <p class="egg-card__fix"><i class="fa-solid fa-wrench"></i> 脚本改走 base64：<code>echo &lt;b64&gt; | base64 -d &gt; /tmp/x.sh</code></p>
+          </article>
+          <article class="egg-card">
+            <h4>脚本被撕成两行</h4>
+            <p class="egg-card__sym">chown: 无效的选项 -- e</p>
+            <p class="egg-card__why">在 PowerShell 双引号里写 <code>\$VAR</code>，反斜杠不是转义符，变量被展开成空，行尾只剩一个 <code>\</code> 把命令接到下一行。</p>
+            <p class="egg-card__fix"><i class="fa-solid fa-wrench"></i> 改用占位符替换，或直接单引号 here-string</p>
+          </article>
+          <article class="egg-card">
+            <h4>中文全变乱码</h4>
+            <p class="egg-card__sym">图层名读出来是「鑳屾櫙」</p>
+            <p class="egg-card__why">Windows PowerShell 5.1 的 <code>Get-Content</code> 默认按 GBK 读，而文件是 UTF-8。</p>
+            <p class="egg-card__fix"><i class="fa-solid fa-wrench"></i> 显式指定编码读一遍，文件本身没坏</p>
+          </article>
+          <article class="egg-card">
+            <h4>JSON 里的引号没了</h4>
+            <p class="egg-card__sym">Problems parsing JSON / 400</p>
+            <p class="egg-card__why">两层原因：<code>--data</code> 传 JSON 时引号被 PowerShell 吞；写文件时又带了 BOM。</p>
+            <p class="egg-card__fix"><i class="fa-solid fa-wrench"></i> 写成不带 BOM 的文件，再用 <code>--data-binary @file</code></p>
+          </article>
+          <article class="egg-card">
+            <h4>npm 被执行策略拦下</h4>
+            <p class="egg-card__sym">无法加载文件 npm.ps1，因为在此系统上禁止运行脚本</p>
+            <p class="egg-card__why">PowerShell 的执行策略挡住了 <code>.ps1</code> 包装脚本。</p>
+            <p class="egg-card__fix"><i class="fa-solid fa-wrench"></i> 直接调 <code>npm.cmd</code></p>
+          </article>
+          <article class="egg-card">
+            <h4>批处理一个文件都没输出</h4>
+            <p class="egg-card__sym">0.3 秒跑完，输出目录是空的</p>
+            <p class="egg-card__why">不是工具的问题——管道里加了 <code>Select-Object -First N</code>，输出被截断后子进程被连带终止。</p>
+            <p class="egg-card__fix"><i class="fa-solid fa-wrench"></i> 改成 <code>*&gt; $null</code> 丢弃输出，别截断</p>
+          </article>
+          <article class="egg-card">
+            <h4>PSD 头读出来是 88</h4>
+            <p class="egg-card__sym">600 像素的图，解析出来宽高都是 88</p>
+            <p class="egg-card__why">PowerShell 的 <code>-shl</code> 会保持左侧操作数的类型，byte 左移 8 位直接溢出成 0。</p>
+            <p class="egg-card__fix"><i class="fa-solid fa-wrench"></i> 改用第三方 PSD 解析器复核，结构完全正确</p>
+          </article>
+        </div>
+      </div>
+
+      <div class="egg__group">
+        <h3><i class="fa-solid fa-tower-broadcast"></i> 发布与网络</h3>
+        <div class="egg__grid">
+          <article class="egg-card">
+            <h4>代码推不上去</h4>
+            <p class="egg-card__sym">fatal: Recv failure: Connection was reset</p>
+            <p class="egg-card__why">git 协议在传输中被重置；换成"用户名 + 令牌"仍被拦。</p>
+            <p class="egg-card__fix"><i class="fa-solid fa-wrench"></i> 改走 REST API 推送：blob → tree → commit → ref（空仓库要先种一个 commit）</p>
+          </article>
+          <article class="egg-card">
+            <h4>GitCode 的附件传不上去</h4>
+            <p class="egg-card__sym">attach_files → 404</p>
+            <p class="egg-card__why">它不是一步上传：要先取一个带签名的上传地址，再 PUT 上去，还得带上三个 x-obs 头。</p>
+            <p class="egg-card__fix"><i class="fa-solid fa-wrench"></i> 按两步流程走通，39 MB 上传只要 11 秒</p>
+          </article>
+          <article class="egg-card">
+            <h4>测速读不到数据</h4>
+            <p class="egg-card__sym">GitCode 节点永远测不出速度</p>
+            <p class="egg-card__why">它的 CDN 不返回跨域头，浏览器拿不到字节数。</p>
+            <p class="egg-card__fix"><i class="fa-solid fa-wrench"></i> 样本大小已知，于是只计时、用「512KB ÷ 耗时」反推</p>
+          </article>
+          <article class="egg-card">
+            <h4>同一批机器差 7 倍</h4>
+            <p class="egg-card__sym">srv2 只有 40 KB/s，srv3 却跑到 260 KB/s</p>
+            <p class="egg-card__why">不是配置问题，是线路质量。</p>
+            <p class="egg-card__fix"><i class="fa-solid fa-wrench"></i> 三个节点实测后把站点迁到最快那台，并把测速写进下载器</p>
+          </article>
+          <article class="egg-card">
+            <h4>套 CDN 反而变慢</h4>
+            <p class="egg-card__sym">CF 代理 55 KB/s < 直连 260 KB/s</p>
+            <p class="egg-card__why">一开始以为"直连被墙"，实测发现只是临时网络波动。</p>
+            <p class="egg-card__fix"><i class="fa-solid fa-wrench"></i> 改回官方直连，代理降为备选节点</p>
+          </article>
+        </div>
+      </div>
+
+      <div class="egg__group">
+        <h3><i class="fa-solid fa-vial"></i> 测试与验证</h3>
+        <div class="egg__grid">
+          <article class="egg-card">
+            <h4>点击总是点不中</h4>
+            <p class="egg-card__sym">截图里明明看见了，点下去没反应</p>
+            <p class="egg-card__why">预览图是缩放过的（838 宽），真实屏幕是 1080，坐标得乘 1.2888。</p>
+            <p class="egg-card__fix"><i class="fa-solid fa-wrench"></i> 后来改成从 UI 层级里取按钮实际的 bounds</p>
+          </article>
+          <article class="egg-card">
+            <h4>差 2 个像素</h4>
+            <p class="egg-card__sym">「保存」按钮点不动</p>
+            <p class="egg-card__why">按钮的实际范围从 y=2211 开始，而点击坐标是 y=2209。</p>
+            <p class="egg-card__fix"><i class="fa-solid fa-wrench"></i> 取 bounds 中心点，一次命中</p>
+          </article>
+          <article class="egg-card">
+            <h4>注入的配置读不到</h4>
+            <p class="egg-card__sym">配置写进去了，App 却还在弹「使用须知」</p>
+            <p class="egg-card__why">文件是 root 所有，App 用户读不了；而且 SELinux 上下文也不对。</p>
+            <p class="egg-card__fix"><i class="fa-solid fa-wrench"></i> <code>chown</code> + <code>restorecon</code> 一个都不能少</p>
+          </article>
+          <article class="egg-card">
+            <h4>整页截图有大片空白</h4>
+            <p class="egg-card__sym">滚动动画没触发，下半页全空</p>
+            <p class="egg-card__why">整页截图时 IntersectionObserver 来不及回调。</p>
+            <p class="egg-card__fix"><i class="fa-solid fa-wrench"></i> 截图前注入 CSS 强制显示；页面本身也加了兜底定时器</p>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
 </main>
 
 <footer class="footer">
@@ -401,6 +627,8 @@
       <a href="#download">下载</a>
       <a href="#about">版权</a>
       <a href="https://github.com/NekoQiye/RE-Amachiromaker" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i> 原项目</a>
+      <!-- 彩蛋：把地址栏 # 后面替换成 bugs 试试 -->
+      <button class="egg-hint" id="eggHint" type="button" aria-label="隐藏页"><i class="fa-solid fa-bug"></i></button>
     </nav>
   </div>
 </footer>
