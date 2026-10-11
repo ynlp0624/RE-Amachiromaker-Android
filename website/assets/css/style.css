@@ -396,7 +396,64 @@ html[data-theme="dark"] .hero__glow { opacity: .55; }
 }
 .rules strong { color: var(--text); }
 
-/* ---------------------------------------------------------------- 页脚 */
+/* ---------------------------------------------------------- 彩蛋页 */
+.egg { padding: 40px 0 90px; }
+.egg__actions { display: flex; align-items: center; gap: 14px; margin-top: 20px; flex-wrap: wrap; }
+.egg__count { font-size: 13px; color: var(--text-muted); }
+.egg__group { margin-top: 40px; }
+.egg__group > h3 {
+  display: flex; align-items: center; gap: 10px; margin: 0 0 16px;
+  font-size: 18px; letter-spacing: -.2px;
+}
+.egg__group > h3 i { color: var(--primary); font-size: 16px; }
+.egg__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+.egg-card {
+  display: flex; flex-direction: column;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px 20px 18px; box-shadow: var(--shadow-sm);
+}
+.egg-card h4 { margin: 0 0 11px; font-size: 15.5px; }
+.egg-card__sym {
+  margin: 0 0 11px; padding: 8px 10px; border-radius: 6px;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 11.5px; line-height: 1.5; word-break: break-word;
+  background: color-mix(in srgb, #d9576a 10%, var(--surface));
+  border-left: 3px solid #d9576a; color: #a84156;
+}
+html[data-theme="dark"] .egg-card__sym { color: #f0b8c0; background: color-mix(in srgb, #d9576a 18%, var(--surface)); }
+.egg-card__why { margin: 0 0 11px; font-size: 13.5px; color: var(--text-muted); line-height: 1.65; }
+.egg-card__fix {
+  margin: auto 0 0; padding-top: 10px; border-top: 1px dashed var(--border);
+  font-size: 13.5px; display: flex; gap: 9px; align-items: flex-start; line-height: 1.6;
+}
+.egg-card__fix i { color: #3f9e73; margin-top: 4px; flex: none; }
+.egg-card code {
+  background: var(--surface-2); padding: 1px 5px; border-radius: 4px;
+  font-size: .92em; border: 1px solid var(--border);
+}
+
+body.egg-open .nav__links,
+body.egg-open .hero,
+body.egg-open .stats,
+body.egg-open #features,
+body.egg-open #gallery,
+body.egg-open #layers,
+body.egg-open #tech,
+body.egg-open #download,
+body.egg-open #about { display: none; }
+
+.egg-hint {
+  display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+  background: none; border: 0; padding: 4px 6px; border-radius: 8px;
+  color: var(--text-muted); font: inherit; font-size: 14px;
+  transition: color .18s, background .18s;
+}
+.egg-hint:hover { color: var(--primary); background: var(--primary-soft); }
+
+@media (max-width: 1024px) { .egg__grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 760px) { .egg__grid { grid-template-columns: 1fr; } .egg { padding-top: 24px; } }
+
 .footer { margin-top: 84px; padding: 34px 0; border-top: 1px solid var(--border); background: var(--surface-2); }
 .footer__inner { display: flex; justify-content: space-between; align-items: flex-start; gap: 26px; flex-wrap: wrap; }
 .footer p { margin: 6px 0 0; font-size: 13.5px; }
