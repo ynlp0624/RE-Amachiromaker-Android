@@ -396,6 +396,11 @@ html[data-theme="dark"] .hero__glow { opacity: .55; }
 }
 .rules strong { color: var(--text); }
 
+/* 关键：显式写了 display 的元素会覆盖浏览器默认的 [hidden]{display:none}，
+   导致 element.hidden = true 根本不生效（教程浮层"点不动"就是这个原因）。
+   这条规则保证 hidden 属性永远有效。 */
+[hidden] { display: none !important; }
+
 /* ---------------------------------------------------------- 彩蛋页 */
 .egg { padding: 40px 0 90px; }
 .egg__actions { display: flex; align-items: center; gap: 14px; margin-top: 20px; flex-wrap: wrap; }
@@ -545,24 +550,61 @@ body.maker-open #download,
 body.maker-open #about,
 body.maker-open .egg { display: none; }
 
-/* ---------------------------------------------------------- 新手教程浮层 */
-.guide { position: fixed; inset: 0; z-index: 200; display: flex; align-items: flex-end; justify-content: center; padding: 24px; }
-.guide__mask { position: absolute; inset: 0; background: rgba(12, 20, 30, .55); backdrop-filter: blur(2px); }
-.guide__card {
-  position: relative; width: min(560px, 100%); background: var(--surface);
-  border: 1px solid var(--border); border-radius: 16px; padding: 26px 26px 22px;
-  box-shadow: 0 22px 60px rgba(10, 25, 40, .3);
-  animation: guideIn .28s cubic-bezier(.22,.9,.32,1);
+/* ---------------------------------------------------------- 新手教程浮层
+   写法照抄原站 static/css/modal.css 的 modal-overlay：
+   用 opacity + visibility + .active 控制显隐 ——
+   visibility:hidden 的元素不接收点击，也天然避开「display:flex 覆盖 [hidden]」的坑。
+   （雫之前自创 hidden 属性写法，导致按钮点了没反应，已改回原站做法。） */
+.guide {
+  position: fixed; inset: 0; z-index: 200;
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  padding-bottom: max(20px, env(safe-area-inset-bottom));
+  background: rgba(30, 45, 50, 0.45);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
 }
-@keyframes guideIn { from { transform: translateY(18px); opacity: 0; } to { transform: none; opacity: 1; } }
+.guide.active {
+  opacity: 1;
+  visibility: visible;
+}
+.guide__card {
+  position: relative;
+  width: min(520px, 100%); max-height: 84vh; overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--border); border-radius: 14px; padding: 24px;
+  box-shadow: var(--shadow-lg, 0 12px 36px rgba(30, 45, 50, 0.22));
+  pointer-events: auto;
+  transform: translateY(6px);
+  transition: transform 0.2s ease;
+}
+.guide.active .guide__card { transform: none; }
 .guide__counter { font-size: 12.5px; color: var(--primary); font-weight: 600; letter-spacing: .3px; }
-.guide__card h3 { margin: 10px 0 10px; font-size: 20px; }
+.guide__card h3 { margin: 10px 0 10px; font-size: 19px; }
 .guide__card p { margin: 0; font-size: 14.5px; line-height: 1.75; color: var(--text-muted); }
 .guide__card p strong { color: var(--text); }
 .guide__dots { display: flex; gap: 6px; margin: 18px 0 0; }
 .guide__dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--border); transition: background .2s, width .2s; }
 .guide__dots i.is-on { background: var(--primary); width: 18px; border-radius: 4px; }
-.guide__actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+.guide__actions { display: flex; gap: 12px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
+/* 按钮反馈照抄原站：touch-action + :active 位移 */
+.guide__actions .btn {
+  touch-action: manipulation;
+  height: 40px; min-width: 96px; padding: 0 20px;
+  border-radius: 8px; font-size: 14px; font-weight: 600;
+  user-select: none; -webkit-user-select: none;
+}
+.guide__actions .btn:active { transform: translateY(1px); }
+.guide__close {
+  position: absolute; top: 12px; right: 12px;
+  width: 32px; height: 32px; border-radius: 8px; cursor: pointer;
+  background: var(--surface-2); border: 1px solid var(--border);
+  color: var(--text-muted); font-size: 14px; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  touch-action: manipulation;
+}
+.guide__close:hover, .guide__close:active { color: var(--primary); border-color: var(--primary); }
 
 @media (max-width: 1024px) {
   .egg__grid { grid-template-columns: repeat(2, 1fr); }
