@@ -11,9 +11,9 @@
 <meta property="og:description" content="把下线的捏脸网站重做成安卓原生应用：Kotlin + Jetpack Compose，无 WebView 套壳，25 个部位、1111 张贴图内置，支持导出 PNG 与分层 PSD。">
 <meta property="og:image" content="assets/img/shizuku-avatar.png">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="assets/img/favicon.png?v=20261012d">
-<link rel="stylesheet" href="assets/css/fontawesome.min.css?v=20261012d">
-<link rel="stylesheet" href="assets/css/style.css?v=20261012d">
+<link rel="icon" href="assets/img/favicon.png?v=20261012i">
+<link rel="stylesheet" href="assets/css/fontawesome.min.css?v=20261012i">
+<link rel="stylesheet" href="assets/css/style.css?v=20261012i">
 </head>
 <body>
 <a class="skip-link" href="#main">跳到主要内容</a>
@@ -65,7 +65,7 @@
           25 个部位、1111 张贴图全部打包进安装包，<strong>没有网络请求、没有 WebView</strong>。
         </p>
         <div class="hero__cta">
-          <a class="btn btn--primary btn--lg" href="assets/download/RE-Amachiromaker-v1.0.2-android.apk" download>
+          <a class="btn btn--primary btn--lg" href="assets/download/RE-Amachiromaker-v1.0.3-android.apk" download>
             <i class="fa-solid fa-download"></i><span>下载 APK</span>
           </a>
           <a class="btn btn--ghost btn--lg" href="#gallery">
@@ -73,7 +73,7 @@
           </a>
         </div>
         <ul class="hero__meta">
-          <li><i class="fa-solid fa-tag"></i> v1.0.2</li>
+          <li><i class="fa-solid fa-tag"></i> v1.0.3</li>
           <li><i class="fa-solid fa-weight-hanging"></i> 39.15 MB</li>
           <li><i class="fa-solid fa-mobile-screen"></i> Android 7.0+</li>
           <li><i class="fa-solid fa-circle-check"></i> 无网络权限</li>
@@ -289,17 +289,17 @@
       <div class="download__main">
         <span class="download__icon"><i class="fa-brands fa-android"></i></span>
         <div class="download__info">
-          <h3>RE-Amachiromaker v1.0.2</h3>
+          <h3>RE-Amachiromaker v1.0.3</h3>
           <p class="muted">Android 7.0 及以上 · 39.15 MB · 本地签名（非商店包，安装时选择「仍要安装」即可）</p>
           <div class="hash">
             <i class="fa-solid fa-fingerprint"></i>
-            <code>SHA-256 a04e2fd23ab3f2a2b4435e07412c3fc7afedcaded8f0fe0e22287c664647a9b7</code>
-            <button class="copy-btn" type="button" data-copy="a04e2fd23ab3f2a2b4435e07412c3fc7afedcaded8f0fe0e22287c664647a9b7">
+            <code>SHA-256 47404bb8859d2cbb88f0a022dee6facada3387cb9779d82d02ec2c55ee99962a</code>
+            <button class="copy-btn" type="button" data-copy="47404bb8859d2cbb88f0a022dee6facada3387cb9779d82d02ec2c55ee99962a">
               <i class="fa-solid fa-copy"></i><span>复制</span>
             </button>
           </div>
         </div>
-        <a class="btn btn--primary btn--lg download__btn" href="assets/download/RE-Amachiromaker-v1.0.2-android.apk" download>
+        <a class="btn btn--primary btn--lg download__btn" href="assets/download/RE-Amachiromaker-v1.0.3-android.apk" download>
           <i class="fa-solid fa-download"></i><span>下载 APK</span>
         </a>
       </div>
@@ -683,10 +683,10 @@
     </div>
   </section>
 
-  <!-- 新手教程浮层 -->
-  <div class="guide" id="guideLayer" hidden>
-    <div class="guide__mask"></div>
+  <!-- 新手教程浮层（显隐照原站 modal 的 .active class 写法） -->
+  <div class="guide" id="guideLayer">
     <div class="guide__card">
+      <button class="guide__close" id="guideClose" type="button" aria-label="关闭教程"><i class="fa-solid fa-xmark"></i></button>
       <span class="guide__counter" id="guideCounter">第 1 / 6 步</span>
       <h3 id="guideTitle">标题</h3>
       <p id="guideText">说明</p>
@@ -700,7 +700,7 @@
 
 <button class="to-top" id="toTop" type="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up"></i></button>
 
-<script src="assets/js/app.js?v=20261012d"></script>
-<script src="assets/js/maker.js?v=20261012c"></script>
+<script src="assets/js/app.js?v=20261012i"></script>
+<script src="assets/js/maker.js?v=20261012i"></script>
 </body>
 </html>
