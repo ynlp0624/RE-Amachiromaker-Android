@@ -451,8 +451,138 @@ body.egg-open #about { display: none; }
 }
 .egg-hint:hover { color: var(--primary); background: var(--primary-soft); }
 
-@media (max-width: 1024px) { .egg__grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 760px) { .egg__grid { grid-template-columns: 1fr; } .egg { padding-top: 24px; } }
+/* ---------------------------------------------------------- 在线捏脸工坊 */
+.maker { padding: 34px 0 80px; }
+.maker__toolbar { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+
+.maker__body {
+  display: grid; grid-template-columns: 420px 1fr; gap: 22px; margin-top: 26px;
+  align-items: start;
+}
+
+.maker__stage { position: sticky; top: 18px; }
+.maker__canvasWrap {
+  position: relative; border-radius: var(--radius); overflow: hidden;
+  border: 1px solid var(--border); box-shadow: var(--shadow-sm);
+  background: repeating-conic-gradient(#f2f6fb 0% 25%, #ffffff 0% 50%) 50% / 22px 22px;
+}
+.maker__canvasWrap canvas { display: block; width: 100%; height: auto; }
+.maker__loading {
+  position: absolute; inset: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 10px;
+  background: rgba(255,255,255,.82); color: var(--text-muted); font-size: 14px;
+  backdrop-filter: blur(3px);
+}
+html[data-theme="dark"] .maker__loading { background: rgba(20,26,36,.82); }
+.maker__status {
+  margin: 12px 0 0; font-size: 13px; color: var(--text-muted); line-height: 1.6;
+  min-height: 21px;
+}
+.maker__note {
+  margin: 30px 0 0; font-size: 13px; color: var(--text-muted);
+  display: flex; gap: 8px; align-items: flex-start; line-height: 1.65;
+}
+.maker__note i { margin-top: 4px; color: var(--primary); }
+
+.maker__panel { min-width: 0; }
+
+.maker__tabs {
+  display: flex; gap: 8px; overflow-x: auto; padding: 4px 2px 12px;
+  scrollbar-width: thin;
+}
+.maker__tab {
+  flex: none; display: flex; flex-direction: column; align-items: center; gap: 4px;
+  width: 62px; padding: 8px 4px; border-radius: 10px; cursor: pointer;
+  background: var(--surface); border: 1px solid var(--border);
+  font: inherit; font-size: 11.5px; color: var(--text-muted);
+  transition: all .16s;
+}
+.maker__tab img { width: 34px; height: 34px; object-fit: contain; border-radius: 6px; }
+.maker__tab:hover { border-color: var(--primary); color: var(--text); }
+.maker__tab.is-active {
+  background: var(--primary-soft); border-color: var(--primary); color: var(--primary);
+  font-weight: 600;
+}
+
+.maker__colors { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 14px; }
+.maker__color {
+  width: 30px; height: 30px; border-radius: 8px; cursor: pointer;
+  border: 2px solid var(--border); padding: 0; transition: transform .14s, border-color .14s;
+}
+.maker__color:hover { transform: translateY(-2px); }
+.maker__color.is-active { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-soft); }
+.maker__color--none {
+  display: flex; align-items: center; justify-content: center;
+  background: var(--surface); color: var(--text-muted); font-size: 13px;
+}
+
+.maker__items {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(74px, 1fr));
+  gap: 10px; max-height: 460px; overflow-y: auto; padding: 2px;
+}
+.maker__item {
+  position: relative; aspect-ratio: 1; border-radius: 10px; cursor: pointer;
+  background: var(--surface); border: 1px solid var(--border); padding: 5px;
+  transition: all .16s; overflow: hidden;
+}
+.maker__item img { width: 100%; height: 100%; object-fit: contain; }
+.maker__item:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); border-color: var(--primary); }
+.maker__item.is-active { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-soft); }
+.maker__item--none {
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-muted); font-size: 20px;
+}
+.maker__item--none.is-active { color: var(--primary); }
+
+body.maker-open .nav__links,
+body.maker-open .hero,
+body.maker-open .stats,
+body.maker-open #features,
+body.maker-open #gallery,
+body.maker-open #layers,
+body.maker-open #tech,
+body.maker-open #download,
+body.maker-open #about,
+body.maker-open .egg { display: none; }
+
+/* ---------------------------------------------------------- 新手教程浮层 */
+.guide { position: fixed; inset: 0; z-index: 200; display: flex; align-items: flex-end; justify-content: center; padding: 24px; }
+.guide__mask { position: absolute; inset: 0; background: rgba(12, 20, 30, .55); backdrop-filter: blur(2px); }
+.guide__card {
+  position: relative; width: min(560px, 100%); background: var(--surface);
+  border: 1px solid var(--border); border-radius: 16px; padding: 26px 26px 22px;
+  box-shadow: 0 22px 60px rgba(10, 25, 40, .3);
+  animation: guideIn .28s cubic-bezier(.22,.9,.32,1);
+}
+@keyframes guideIn { from { transform: translateY(18px); opacity: 0; } to { transform: none; opacity: 1; } }
+.guide__counter { font-size: 12.5px; color: var(--primary); font-weight: 600; letter-spacing: .3px; }
+.guide__card h3 { margin: 10px 0 10px; font-size: 20px; }
+.guide__card p { margin: 0; font-size: 14.5px; line-height: 1.75; color: var(--text-muted); }
+.guide__card p strong { color: var(--text); }
+.guide__dots { display: flex; gap: 6px; margin: 18px 0 0; }
+.guide__dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--border); transition: background .2s, width .2s; }
+.guide__dots i.is-on { background: var(--primary); width: 18px; border-radius: 4px; }
+.guide__actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+
+@media (max-width: 1024px) {
+  .egg__grid { grid-template-columns: repeat(2, 1fr); }
+  .maker__body { grid-template-columns: 1fr; }
+}
+@media (max-width: 760px) {
+  .egg__grid { grid-template-columns: 1fr; }
+  .egg { padding-top: 24px; }
+}
+@media (max-width: 980px) {
+  .maker__body { grid-template-columns: 1fr; }
+  .maker__stage { position: static; }
+  .maker__canvasWrap { max-width: 420px; margin: 0 auto; }
+  .maker__items { max-height: 320px; }
+}
+@media (max-width: 560px) {
+  .maker__items { grid-template-columns: repeat(auto-fill, minmax(62px, 1fr)); }
+  .maker__tab { width: 56px; }
+}
+
 
 .footer { margin-top: 84px; padding: 34px 0; border-top: 1px solid var(--border); background: var(--surface-2); }
 .footer__inner { display: flex; justify-content: space-between; align-items: flex-start; gap: 26px; flex-wrap: wrap; }
