@@ -11,9 +11,9 @@
 <meta property="og:description" content="把下线的捏脸网站重做成安卓原生应用：Kotlin + Jetpack Compose，无 WebView 套壳，25 个部位、1111 张贴图内置，支持导出 PNG 与分层 PSD。">
 <meta property="og:image" content="assets/img/shizuku-avatar.png">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="assets/img/favicon.png?v=20261012i">
-<link rel="stylesheet" href="assets/css/fontawesome.min.css?v=20261012i">
-<link rel="stylesheet" href="assets/css/style.css?v=20261012i">
+<link rel="icon" href="assets/img/favicon.png?v=20261012j">
+<link rel="stylesheet" href="assets/css/fontawesome.min.css?v=20261012j">
+<link rel="stylesheet" href="assets/css/style.css?v=20261012j">
 </head>
 <body>
 <a class="skip-link" href="#main">跳到主要内容</a>
@@ -33,6 +33,7 @@
       <a href="#gallery">截图</a>
       <a href="#layers">图层</a>
       <a href="#tech">技术</a>
+      <a href="#changelog">更新日志</a>
       <a href="#download">下载</a>
       <a href="#about">关于</a>
     </nav>
@@ -340,6 +341,73 @@
   </section>
 
   <!-- ================= ABOUT ================= -->
+  <section class="section container" id="changelog">
+    <div class="section__head">
+      <span class="eyebrow"><i class="fa-solid fa-clock-rotate-left"></i> 版本记录</span>
+      <h2>更新日志</h2>
+      <p>从第一个安卓版到现在的每一次改动，按时间倒序排列。</p>
+    </div>
+
+    <ol class="timeline">
+      <li class="timeline__item">
+        <div class="timeline__head">
+          <span class="timeline__ver">v1.0.3</span>
+          <span class="timeline__date">2026-10-12</span>
+          <span class="badge badge--latest">最新</span>
+        </div>
+        <ul class="timeline__list">
+          <li><span class="tag tag--change">变更</span><span><b>渲染逻辑与网页原站对齐</b>：撤掉此前额外添加的图层顺序修正与后发补画，恢复为原站的「按数组顺序逐层叠加」，输出与原站逐像素一致。</span></li>
+          <li><span class="tag tag--change">变更</span><span>预览、PNG、PSD、SVG 四处导出的图层顺序统一。</span></li>
+          <li><span class="tag tag--fix">修复</span><span>网页版捏脸工坊的教程浮层改用原站的显隐写法，修复「跳过 / 下一步」点击无反应的问题。</span></li>
+        </ul>
+      </li>
+
+      <li class="timeline__item">
+        <div class="timeline__head">
+          <span class="timeline__ver">v1.0.2</span>
+          <span class="timeline__date">2026-10-12</span>
+        </div>
+        <ul class="timeline__list">
+          <li><span class="tag tag--change">变更</span><span>尝试处理后发被衣服遮挡的问题（<em>该改动已在 v1.0.3 撤销，以保持与原站一致</em>）。</span></li>
+        </ul>
+      </li>
+
+      <li class="timeline__item">
+        <div class="timeline__head">
+          <span class="timeline__ver">v1.0.1</span>
+          <span class="timeline__date">2026-10-11</span>
+        </div>
+        <ul class="timeline__list">
+          <li><span class="tag tag--new">新增</span><span><b>SVG 分层导出</b>：每个部位是一个带名字的图层组，浏览器可直接打开，也能拖进 Illustrator / Figma / Inkscape 继续编辑。</span></li>
+          <li><span class="tag tag--fix">优化</span><span>预览启用高质量重采样，放大时边缘更平滑。</span></li>
+          <li><span class="tag tag--change">变更</span><span>调整「チョーカー」的绘制层次（<em>已在 v1.0.3 随渲染逻辑一并对齐原站</em>）。</span></li>
+        </ul>
+      </li>
+
+      <li class="timeline__item">
+        <div class="timeline__head">
+          <span class="timeline__ver">v1.0.0</span>
+          <span class="timeline__date">2026-10-10</span>
+        </div>
+        <ul class="timeline__list">
+          <li><span class="tag tag--new">新增</span><span>首个安卓原生版本：把网页版完整移植为 Kotlin + Jetpack Compose 应用，<b>不是 WebView 套壳</b>。</span></li>
+          <li><span class="tag tag--new">新增</span><span>全部素材打包进安装包，<b>完全离线可用、无需联网、不申请网络权限</b>。</span></li>
+          <li><span class="tag tag--new">新增</span><span>保存 PNG（600×600 透明底）、保存分层 PSD、预设的导出与载入。</span></li>
+          <li><span class="tag tag--new">新增</span><span>日间 / 夜间主题跟随系统；横竖屏自适应布局。</span></li>
+        </ul>
+      </li>
+    </ol>
+
+    <p class="timeline__foot">
+      <i class="fa-solid fa-code-branch"></i>
+      完整的提交记录可在
+      <a href="https://github.com/ynlp0624/RE-Amachiromaker-Android/commits/main" target="_blank" rel="noopener">GitHub</a>
+      或
+      <a href="https://gitcode.com/gcw_YiSvwnI0/RE-Amachiromaker-Android" target="_blank" rel="noopener">GitCode</a>
+      查看。
+    </p>
+  </section>
+
   <section class="section container" id="about">
     <header class="section__head">
       <span class="eyebrow"><i class="fa-solid fa-circle-info"></i> 关于</span>
@@ -624,6 +692,7 @@
     <nav class="footer__links">
       <a href="#features">特性</a>
       <a href="#gallery">截图</a>
+      <a href="#changelog">更新日志</a>
       <a href="#download">下载</a>
       <a href="#about">版权</a>
       <a href="https://github.com/NekoQiye/RE-Amachiromaker" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i> 原项目</a>
@@ -700,7 +769,7 @@
 
 <button class="to-top" id="toTop" type="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up"></i></button>
 
-<script src="assets/js/app.js?v=20261012i"></script>
-<script src="assets/js/maker.js?v=20261012i"></script>
+<script src="assets/js/app.js?v=20261012j"></script>
+<script src="assets/js/maker.js?v=20261012j"></script>
 </body>
 </html>
