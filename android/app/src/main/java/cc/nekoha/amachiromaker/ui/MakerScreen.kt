@@ -51,7 +51,6 @@ import cc.nekoha.amachiromaker.export.PsdWriter
 import cc.nekoha.amachiromaker.export.SvgLayer
 import cc.nekoha.amachiromaker.export.SvgWriter
 import cc.nekoha.amachiromaker.render.Compositor
-import cc.nekoha.amachiromaker.render.LayerOrder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -446,15 +445,14 @@ private fun PickerPane(
     }
 }
 
-/** 生成 SVG：每个部位一个带名字的图层组，坐标与 PNG / PSD 导出完全一致。 */
+/** 生成 SVG：每个部位一个带名字的图层组，顺序与原站一致（按 layerComb 数组顺序）。 */
 private fun buildSvgBytes(state: MakerState, store: AssetStore): ByteArray {
     val layers = ArrayList<SvgLayer>()
-    for (index in LayerOrder.orderFor(state.parts.size)) {
-        val part = state.parts.getOrNull(index) ?: continue
-        val selection = state.selections.getOrNull(index) ?: continue
-        if (selection.url.isEmpty()) continue
-        val bitmap = store.decodeBitmap(selection.url) ?: continue
-        val cropped = cropToCanvas(bitmap, selection.x, selection.y) ?: continue
+    state.parts.forEachIndexed { index, part ->
+        val selection = state.selections.getOrNull(index) ?: return@forEachIndexed
+        if (selection.url.isEmpty()) return@forEachIndexed
+        val bitmap = store.decodeBitmap(selection.url) ?: return@forEachIndexed
+        val cropped = cropToCanvas(bitmap, selection.x, selection.y) ?: return@forEachIndexed
         layers.add(
             SvgLayer(
                 name = part.pNm.ifBlank { "layer-$index" },
@@ -470,12 +468,11 @@ private fun buildSvgBytes(state: MakerState, store: AssetStore): ByteArray {
 /** Builds the layered PSD: one cropped layer per part, plus the flattened preview. */
 private fun buildPsdBytes(state: MakerState, store: AssetStore): ByteArray {
     val layers = ArrayList<PsdLayer>()
-    for (index in LayerOrder.orderFor(state.parts.size)) {
-        val part = state.parts.getOrNull(index) ?: continue
-        val selection = state.selections.getOrNull(index) ?: continue
-        if (selection.url.isEmpty()) continue
-        val bitmap = store.decodeBitmap(selection.url) ?: continue
-        val cropped = cropToCanvas(bitmap, selection.x, selection.y) ?: continue
+    state.parts.forEachIndexed { index, part ->
+        val selection = state.selections.getOrNull(index) ?: return@forEachIndexed
+        if (selection.url.isEmpty()) return@forEachIndexed
+        val bitmap = store.decodeBitmap(selection.url) ?: return@forEachIndexed
+        val cropped = cropToCanvas(bitmap, selection.x, selection.y) ?: return@forEachIndexed
         layers.add(
             PsdLayer(
                 name = part.pNm.ifBlank { "layer-$index" },
