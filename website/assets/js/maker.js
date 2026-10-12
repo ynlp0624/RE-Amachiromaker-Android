@@ -394,6 +394,48 @@
     });
   }
 
+  /* ---------------------------------------------------------- 界面风格切换 */
+  /**
+   * 默认风格 / 小米风格（Miuix · HyperOS 设计语言）二选一。
+   * 设计令牌来自 compose-miuix-ui 的 Web 实现 miuix-vue 的 CSS 变量，
+   * 见 style.css 里的 .maker--miuix 段落。选择记在 localStorage。
+   */
+  function initStyleSwitch() {
+    var wrap = document.querySelector('.style-switch');
+    var section = document.getElementById('makerEgg');
+    if (!wrap || !section) return;
+
+    function applyStyle(style, silent) {
+      var isMiuix = style === 'miuix';
+      section.classList.toggle('maker--miuix', isMiuix);
+      Array.prototype.forEach.call(wrap.querySelectorAll('.style-switch__btn'), function (b) {
+        b.classList.toggle('is-active', b.getAttribute('data-style') === style);
+      });
+      try { localStorage.setItem('shizuku-maker-style', style); } catch (e) { /* 无痕模式忽略 */ }
+      if (!silent && el.status) {
+        el.status.textContent = isMiuix ? '已切换到小米风格（Miuix 设计语言）' : '已切回默认风格';
+      }
+    }
+
+    var saved = null;
+    try { saved = localStorage.getItem('shizuku-maker-style'); } catch (e) { saved = null; }
+    applyStyle(saved === 'miuix' ? 'miuix' : 'default', true);
+
+    // 走事件委托，和教程浮层同款做法
+    document.addEventListener('click', function (e) {
+      var node = e.target;
+      while (node && node.nodeType === 1) {
+        if (node.classList && node.classList.contains('style-switch__btn')) {
+          e.preventDefault();
+          applyStyle(node.getAttribute('data-style'));
+          return;
+        }
+        if (node.classList && node.classList.contains('style-switch')) return;
+        node = node.parentNode;
+      }
+    }, true);
+  }
+
   /* ---------------------------------------------------------- 启动 */
   function boot() {
     el.canvas = document.getElementById('makerCanvas');
@@ -422,6 +464,7 @@
     });
 
     bindGuideDelegation();   // 教程按钮走事件委托，手机上也能点
+    initStyleSwitch();       // 默认 / 小米风格切换
 
     window.addEventListener('hashchange', syncFromHash);
     syncFromHash();
