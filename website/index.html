@@ -11,9 +11,9 @@
 <meta property="og:description" content="把下线的捏脸网站重做成安卓原生应用：Kotlin + Jetpack Compose，无 WebView 套壳，25 个部位、1111 张贴图内置，支持导出 PNG 与分层 PSD。">
 <meta property="og:image" content="assets/img/shizuku-avatar.png">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="assets/img/favicon.png">
-<link rel="stylesheet" href="assets/css/fontawesome.min.css">
-<link rel="stylesheet" href="assets/css/style.css">
+<link rel="icon" href="assets/img/favicon.png?v=20261012d">
+<link rel="stylesheet" href="assets/css/fontawesome.min.css?v=20261012d">
+<link rel="stylesheet" href="assets/css/style.css?v=20261012d">
 </head>
 <body>
 <a class="skip-link" href="#main">跳到主要内容</a>
@@ -65,7 +65,7 @@
           25 个部位、1111 张贴图全部打包进安装包，<strong>没有网络请求、没有 WebView</strong>。
         </p>
         <div class="hero__cta">
-          <a class="btn btn--primary btn--lg" href="assets/download/RE-Amachiromaker-v1.0.1-android.apk" download>
+          <a class="btn btn--primary btn--lg" href="assets/download/RE-Amachiromaker-v1.0.2-android.apk" download>
             <i class="fa-solid fa-download"></i><span>下载 APK</span>
           </a>
           <a class="btn btn--ghost btn--lg" href="#gallery">
@@ -73,7 +73,7 @@
           </a>
         </div>
         <ul class="hero__meta">
-          <li><i class="fa-solid fa-tag"></i> v1.0.1</li>
+          <li><i class="fa-solid fa-tag"></i> v1.0.2</li>
           <li><i class="fa-solid fa-weight-hanging"></i> 39.15 MB</li>
           <li><i class="fa-solid fa-mobile-screen"></i> Android 7.0+</li>
           <li><i class="fa-solid fa-circle-check"></i> 无网络权限</li>
@@ -289,17 +289,17 @@
       <div class="download__main">
         <span class="download__icon"><i class="fa-brands fa-android"></i></span>
         <div class="download__info">
-          <h3>RE-Amachiromaker v1.0.1</h3>
+          <h3>RE-Amachiromaker v1.0.2</h3>
           <p class="muted">Android 7.0 及以上 · 39.15 MB · 本地签名（非商店包，安装时选择「仍要安装」即可）</p>
           <div class="hash">
             <i class="fa-solid fa-fingerprint"></i>
-            <code>SHA-256 bf761bfa5e6c6fa7ca8b02977f74534b202eadd84d4010c898f6dabf7e636479</code>
-            <button class="copy-btn" type="button" data-copy="bf761bfa5e6c6fa7ca8b02977f74534b202eadd84d4010c898f6dabf7e636479">
+            <code>SHA-256 a04e2fd23ab3f2a2b4435e07412c3fc7afedcaded8f0fe0e22287c664647a9b7</code>
+            <button class="copy-btn" type="button" data-copy="a04e2fd23ab3f2a2b4435e07412c3fc7afedcaded8f0fe0e22287c664647a9b7">
               <i class="fa-solid fa-copy"></i><span>复制</span>
             </button>
           </div>
         </div>
-        <a class="btn btn--primary btn--lg download__btn" href="assets/download/RE-Amachiromaker-v1.0.1-android.apk" download>
+        <a class="btn btn--primary btn--lg download__btn" href="assets/download/RE-Amachiromaker-v1.0.2-android.apk" download>
           <i class="fa-solid fa-download"></i><span>下载 APK</span>
         </a>
       </div>
@@ -644,8 +644,63 @@
   <button class="lightbox__nav lightbox__nav--next" id="lightboxNext" type="button" aria-label="下一张"><i class="fa-solid fa-chevron-right"></i></button>
 </div>
 
+  <!-- ================= 彩蛋 2：在线捏脸工坊（地址栏 #shizuku 可见） ================= -->
+  <section class="maker" id="makerEgg" hidden>
+    <div class="container">
+      <header class="section__head">
+        <span class="eyebrow"><i class="fa-solid fa-wand-magic-sparkles"></i> 隐藏彩蛋 · 在线捏脸</span>
+        <h2>在这里捏一只属于你的猫娘</h2>
+        <p>把安卓版里的捏脸工坊搬到了网页上：25 个部位、上千张贴图，点一点就能拼出一个形象，满意了直接导出 PNG。</p>
+        <div class="maker__toolbar">
+          <button class="btn btn--primary btn--sm" id="makerSave" type="button"><i class="fa-solid fa-download"></i><span>保存 PNG</span></button>
+          <button class="btn btn--ghost btn--sm" id="makerRandom" type="button"><i class="fa-solid fa-shuffle"></i><span>随机一套</span></button>
+          <button class="btn btn--ghost btn--sm" id="makerReset" type="button"><i class="fa-solid fa-rotate-left"></i><span>重置</span></button>
+          <button class="btn btn--ghost btn--sm" id="makerGuide" type="button"><i class="fa-solid fa-graduation-cap"></i><span>新手教程</span></button>
+          <button class="btn btn--ghost btn--sm" id="makerExit" type="button"><i class="fa-solid fa-arrow-left"></i><span>回到主页</span></button>
+        </div>
+      </header>
+
+      <div class="maker__body">
+        <div class="maker__stage">
+          <div class="maker__canvasWrap">
+            <canvas id="makerCanvas" width="600" height="600" aria-label="捏脸预览"></canvas>
+            <div class="maker__loading" id="makerLoading"><i class="fa-solid fa-spinner fa-spin"></i><span>正在读取素材…</span></div>
+          </div>
+          <p class="maker__status" id="makerStatus">正在准备…</p>
+        </div>
+
+        <div class="maker__panel">
+          <div class="maker__tabs" id="makerTabs" role="tablist"></div>
+          <div class="maker__colors" id="makerColors"></div>
+          <div class="maker__items" id="makerItems"></div>
+        </div>
+      </div>
+
+      <p class="maker__note">
+        <i class="fa-solid fa-circle-info"></i>
+        贴图版权归 甘城なつき 所有，仅供个人捏脸玩耍，请勿商用或二次售卖。
+      </p>
+    </div>
+  </section>
+
+  <!-- 新手教程浮层 -->
+  <div class="guide" id="guideLayer" hidden>
+    <div class="guide__mask"></div>
+    <div class="guide__card">
+      <span class="guide__counter" id="guideCounter">第 1 / 6 步</span>
+      <h3 id="guideTitle">标题</h3>
+      <p id="guideText">说明</p>
+      <div class="guide__dots" id="guideDots"></div>
+      <div class="guide__actions">
+        <button class="btn btn--ghost btn--sm" id="guideSkip" type="button">跳过</button>
+        <button class="btn btn--primary btn--sm" id="guideNext" type="button">下一步</button>
+      </div>
+    </div>
+  </div>
+
 <button class="to-top" id="toTop" type="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up"></i></button>
 
-<script src="assets/js/app.js"></script>
+<script src="assets/js/app.js?v=20261012d"></script>
+<script src="assets/js/maker.js?v=20261012c"></script>
 </body>
 </html>
