@@ -11,9 +11,9 @@
 <meta property="og:description" content="把下线的捏脸网站重做成安卓原生应用：Kotlin + Jetpack Compose，无 WebView 套壳，25 个部位、1111 张贴图内置，支持导出 PNG 与分层 PSD。">
 <meta property="og:image" content="assets/img/shizuku-avatar.png">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="assets/img/favicon.png?v=20261012j">
-<link rel="stylesheet" href="assets/css/fontawesome.min.css?v=20261012j">
-<link rel="stylesheet" href="assets/css/style.css?v=20261012j">
+<link rel="icon" href="assets/img/favicon.png?v=20261012n">
+<link rel="stylesheet" href="assets/css/fontawesome.min.css?v=20261012n">
+<link rel="stylesheet" href="assets/css/style.css?v=20261012n">
 </head>
 <body>
 <a class="skip-link" href="#main">跳到主要内容</a>
@@ -721,6 +721,10 @@
         <h2>在这里捏一只属于你的猫娘</h2>
         <p>把安卓版里的捏脸工坊搬到了网页上：25 个部位、上千张贴图，点一点就能拼出一个形象，满意了直接导出 PNG。</p>
         <div class="maker__toolbar">
+          <div class="style-switch" role="group" aria-label="界面风格">
+            <button class="style-switch__btn is-active" data-style="default" type="button">默认</button>
+            <button class="style-switch__btn" data-style="miuix" type="button">小米</button>
+          </div>
           <button class="btn btn--primary btn--sm" id="makerSave" type="button"><i class="fa-solid fa-download"></i><span>保存 PNG</span></button>
           <button class="btn btn--ghost btn--sm" id="makerRandom" type="button"><i class="fa-solid fa-shuffle"></i><span>随机一套</span></button>
           <button class="btn btn--ghost btn--sm" id="makerReset" type="button"><i class="fa-solid fa-rotate-left"></i><span>重置</span></button>
@@ -769,7 +773,7 @@
 
 <button class="to-top" id="toTop" type="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up"></i></button>
 
-<script src="assets/js/app.js?v=20261012j"></script>
-<script src="assets/js/maker.js?v=20261012j"></script>
+<script src="assets/js/app.js?v=20261012n"></script>
+<script src="assets/js/maker.js?v=20261012n"></script>
 </body>
 </html>
