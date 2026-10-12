@@ -14,6 +14,12 @@ package cc.nekoha.amachiromaker.render
  */
 object LayerOrder {
 
+    /** 后发（後ろ髪）在 orderedLayers 里的下标。 */
+    const val BACK_HAIR = 1
+
+    /** 衣服（服）在 orderedLayers 里的下标。 */
+    const val CLOTH = 16
+
     /** 25 个部位时的修正顺序；索引对应 orderedLayers 数组。 */
     private val FIXED_ORDER = intArrayOf(
         0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, // 背景 → 后发 → 脸 → 五官 → 兽耳/角/耳饰
