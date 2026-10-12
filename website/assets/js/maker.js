@@ -9,9 +9,6 @@
   var ASSET_BASE = 'maker/';          // 素材根目录（服务器上的 maker/）
   var CANVAS_SIZE = 600;
 
-  // 与 App 的 render/LayerOrder.kt 完全一致的绘制顺序
-  var DRAW_ORDER = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 18, 19, 17, 16, 15, 20, 21, 22, 23, 24];
-
   var state = {
     parts: [],
     comb: [],       // [{url, x, y, itmId, cId}]
@@ -60,14 +57,14 @@
   }
 
   /* ---------------------------------------------------------- 渲染 */
+  // 与原站 App.tsx 一致：按 layerComb 的数组顺序逐层叠加（mergeImages 的等价实现）
   function render() {
     var canvas = el.canvas;
     var ctx = canvas.getContext('2d');
     var token = ++state.renderToken;
     ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
-    var jobs = DRAW_ORDER.map(function (idx) {
-      var sel = state.comb[idx];
+    var jobs = state.comb.map(function (sel) {
       if (!sel || !sel.url) return null;
       return loadImage(assetUrl(sel.url)).then(function (img) {
         return img ? { img: img, x: sel.x, y: sel.y } : null;
@@ -79,38 +76,6 @@
       layers.forEach(function (l) {
         if (l) ctx.drawImage(l.img, l.x, l.y, l.img.width, l.img.height);
       });
-      return reapplyHairOverCloth(ctx, token);
-    });
-  }
-
-  /**
-   * 后发（後ろ髪）排在脸之前，所以它垂到胸前的那部分会被衣服盖住 —— 看起来像"头发穿模"。
-   * 这里把「后发 ∩ 衣服范围」再补画一次压在衣服上，头发就自然垂在衣服外面了。
-   */
-  function reapplyHairOverCloth(ctx, token) {
-    var back = state.comb[1];
-    var cloth = state.comb[16];
-    if (!back || !back.url || !cloth || !cloth.url) return Promise.resolve();
-
-    return Promise.all([
-      loadImage(assetUrl(back.url)),
-      loadImage(assetUrl(cloth.url))
-    ]).then(function (imgs) {
-      if (token !== state.renderToken) return;
-      var hair = imgs[0], clothImg = imgs[1];
-      if (!hair || !clothImg) return;
-
-      var tmp = document.createElement('canvas');
-      tmp.width = CANVAS_SIZE;
-      tmp.height = CANVAS_SIZE;
-      var tctx = tmp.getContext('2d');
-      // 1) 先画衣服的范围
-      tctx.drawImage(clothImg, cloth.x, cloth.y, clothImg.width, clothImg.height);
-      // 2) 只保留落在这块范围里的头发
-      tctx.globalCompositeOperation = 'source-in';
-      tctx.drawImage(hair, back.x, back.y, hair.width, hair.height);
-      // 3) 盖到成品上
-      ctx.drawImage(tmp, 0, 0);
     });
   }
 
@@ -161,18 +126,20 @@
     el.items.innerHTML = '';
     if (!part) return;
 
-    // 「无」选项
-    var none = document.createElement('button');
-    none.type = 'button';
-    none.className = 'maker__item maker__item--none' + (!sel.url ? ' is-active' : '');
-    none.title = '不要这个部位';
-    none.innerHTML = '<i class="fa-solid fa-xmark"></i>';
-    none.addEventListener('click', function () {
-      state.comb[state.activePart] = { url: '', x: sel.x, y: sel.y, itmId: 0, cId: 0 };
-      buildItems(); render();
-      el.status.textContent = '已隐藏「' + part.pNm + '」';
-    });
-    el.items.appendChild(none);
+    // 「无」选项 —— 与原站一致：只有 isRmv 的部位才提供这个格子
+    if (part.isRmv) {
+      var none = document.createElement('button');
+      none.type = 'button';
+      none.className = 'maker__item maker__item--none' + (!sel.url ? ' is-active' : '');
+      none.title = '不要这个部位';
+      none.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+      none.addEventListener('click', function () {
+        state.comb[state.activePart] = { url: '', x: sel.x, y: sel.y, itmId: 0, cId: 0 };
+        buildItems(); render();
+        el.status.textContent = '已隐藏「' + part.pNm + '」';
+      });
+      el.items.appendChild(none);
+    }
 
     part.items.forEach(function (item, idx) {
       var b = document.createElement('button');
@@ -225,15 +192,16 @@
       return;
     }
     // 在当前 item 里找该颜色对应的素材
-    var item = part.items.filter(function (it) { return String(it.itmId) === String(sel.itmId); })[0];
-    if (!item) return;
-    var target = item.originals.filter(function (o) { return String(o.cId) === String(cId); })[0];
-    if (!target) return;
-    sel.url = target.url;
-    sel.cId = target.cId;
-    buildColors(); render();
-    el.status.textContent = '换好颜色了';
+      var item = part.items.filter(function (it) { return String(it.itmId) === String(sel.itmId); })[0];
+      if (!item) return;
+      var target = item.originals.filter(function (o) { return String(o.cId) === String(cId); })[0];
+      if (!target) return;
+      sel.url = target.url;
+      sel.cId = target.cId;
+      buildColors(); render();
+      el.status.textContent = '换好颜色了';
   }
+
 
   function randomize() {
     state.parts.forEach(function (part, i) {
@@ -312,7 +280,6 @@
 
   function openGuide(i) {
     guideIndex = Math.max(0, Math.min(STEPS.length - 1, i));
-    el.guideLayer.hidden = false;
     el.guideCounter.textContent = '第 ' + (guideIndex + 1) + ' / ' + STEPS.length + ' 步';
     el.guideTitle.textContent = STEPS[guideIndex].title;
     el.guideText.innerHTML = STEPS[guideIndex].text;
@@ -320,12 +287,52 @@
     el.guideDots.innerHTML = STEPS.map(function (_, n) {
       return '<i class="' + (n === guideIndex ? 'is-on' : '') + '"></i>';
     }).join('');
+    // 显隐照原站 modal.css 的做法：加 .active（opacity + visibility）
+    el.guideLayer.classList.add('active');
   }
 
   function closeGuide() {
-    el.guideLayer.hidden = true;
+    el.guideLayer.classList.remove('active');
     state.guideClosed = true;      // 用户手动关过就不再自动弹
     try { localStorage.setItem('shizuku-maker-guide', '1'); } catch (e) { /* 无痕模式忽略 */ }
+  }
+
+  function guideIsOpen() {
+    return el.guideLayer.classList.contains('active');
+  }
+
+  function nextGuideStep() {
+    if (guideIndex === STEPS.length - 1) { closeGuide(); return; }
+    openGuide(guideIndex + 1);
+  }
+
+  /**
+   * 教程浮层统一走「事件委托」（捕获阶段）。
+   * 直接给按钮绑 listener 在手机上偶发点不动（软键盘/工具栏遮挡、加载中卡顿、
+   * 或元素被重新渲染），委托到 document 最稳，且不依赖按钮何时被创建。
+   */
+  function bindGuideDelegation() {
+    document.addEventListener('click', function (e) {
+      var node = e.target;
+      while (node && node.nodeType === 1) {
+        var id = node.id;
+        if (id === 'guideSkip' || id === 'guideClose') {
+          e.preventDefault(); e.stopPropagation(); closeGuide(); return;
+        }
+        if (id === 'guideNext') {
+          e.preventDefault(); e.stopPropagation(); nextGuideStep(); return;
+        }
+        if (node === el.guideLayer) {
+          closeGuide(); return;        // 点空白遮罩关闭（照原站做法）
+        }
+        if (id === 'guideLayer') return;   // 卡片内部其它区域：不处理
+        node = node.parentNode;
+      }
+    }, true);
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && guideIsOpen()) closeGuide();
+    });
   }
 
   /* ---------------------------------------------------------- 显示 / 隐藏 */
@@ -371,6 +378,7 @@
       buildTabs(); buildColors(); buildItems(); render();
       el.status.textContent = '素材已就绪：' + state.parts.length + ' 个部位，随便点着玩～';
       // 第一次进来自动弹教程（用户手动关过 / 已看过就不弹）
+      // 延迟久一点：等首屏素材与缩略图都渲染完，避免用户点击时主线程还忙着加载
       var seen = false;
       try { seen = localStorage.getItem('shizuku-maker-guide') === '1'; } catch (e) { seen = false; }
       state.guideClosed = state.guideClosed || seen;
@@ -378,7 +386,7 @@
         setTimeout(function () {
           if (state.guideClosed) return;
           openGuide(0);
-        }, 600);
+        }, 1400);
       }
     }).catch(function (err) {
       el.loading.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i><span>素材没加载成功，刷新一次试试</span>';
@@ -412,12 +420,8 @@
       }
       setMakerVisible(false);
     });
-    document.getElementById('guideSkip').addEventListener('click', closeGuide);
-    document.getElementById('guideNext').addEventListener('click', function () {
-      if (guideIndex === STEPS.length - 1) { closeGuide(); return; }
-      openGuide(guideIndex + 1);
-    });
-    el.guideLayer.querySelector('.guide__mask').addEventListener('click', closeGuide);
+
+    bindGuideDelegation();   // 教程按钮走事件委托，手机上也能点
 
     window.addEventListener('hashchange', syncFromHash);
     syncFromHash();
