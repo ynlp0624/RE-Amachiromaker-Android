@@ -14,7 +14,8 @@
     comb: [],       // [{url, x, y, itmId, cId}]
     activePart: 0,
     ready: false,
-    renderToken: 0
+    renderToken: 0,
+    collarUnderCloth: false   // 「让衣服遮住项圈」：开启后项圈画在衣服之下（默认关闭 = 原站行为）
   };
 
   var imgCache = new Map();
@@ -57,14 +58,37 @@
   }
 
   /* ---------------------------------------------------------- 渲染 */
-  // 与原站 App.tsx 一致：按 layerComb 的数组顺序逐层叠加（mergeImages 的等价实现）
+  /**
+   * 绘制顺序：默认就是原站的「数组顺序」。
+   * 只有用户主动打开「让衣服遮住项圈」时，才把项圈挪到衣服之前 —— 这时的效果是
+   * 项圈被领口挡住，不会浮在高领衣服外面。
+   */
+  function buildDrawOrder() {
+    var order = [];
+    for (var i = 0; i < state.comb.length; i++) order.push(i);
+    if (!state.collarUnderCloth) return order;
+
+    var collarIdx = -1, clothIdx = -1;
+    state.parts.forEach(function (p, i) {
+      if (p.pNm === 'チョーカー') collarIdx = i;
+      if (p.pNm === '服') clothIdx = i;
+    });
+    if (collarIdx < 0 || clothIdx < 0 || collarIdx < clothIdx) return order;
+
+    order = order.filter(function (i) { return i !== collarIdx; });
+    var pos = order.indexOf(clothIdx);
+    order.splice(pos >= 0 ? pos : order.length, 0, collarIdx);
+    return order;
+  }
+
   function render() {
     var canvas = el.canvas;
     var ctx = canvas.getContext('2d');
     var token = ++state.renderToken;
     ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
-    var jobs = state.comb.map(function (sel) {
+    var jobs = buildDrawOrder().map(function (idx) {
+      var sel = state.comb[idx];
       if (!sel || !sel.url) return null;
       return loadImage(assetUrl(sel.url)).then(function (img) {
         return img ? { img: img, x: sel.x, y: sel.y } : null;
@@ -91,8 +115,7 @@
       var thumb = part.thumbUrl || (part.items[0] && part.items[0].thumbUrl) || '';
       b.innerHTML = '<img src="' + assetUrl(thumb) + '" alt="' + part.pNm + '"><span>' + part.pNm + '</span>';
       b.addEventListener('click', function () {
-        state.activePart = i;
-        buildTabs(); buildColors(); buildItems();
+        state.activePart = i; buildTabs(); buildColors(); buildItems(); buildOptions();
         el.status.textContent = '当前编辑：' + part.pNm + '（' + part.items.length + ' 款可选）';
       });
       el.tabs.appendChild(b);
@@ -152,6 +175,30 @@
     });
   }
 
+  /** 部位专属选项：目前只有「项圈层次」——让用户自己决定要项圈还是让衣服遮住脖子。 */
+  function buildOptions() {
+    if (!el.options) return;
+    el.options.innerHTML = '';
+    var part = state.parts[state.activePart];
+    if (!part || part.pNm !== 'チョーカー') return;
+
+    var wrap = document.createElement('div');
+    wrap.className = 'maker__option';
+    wrap.innerHTML =
+      '<input type="checkbox" id="optCollarUnder"' + (state.collarUnderCloth ? ' checked' : '') + '>' +
+      '<label for="optCollarUnder">让衣服遮住项圈' +
+      '<small>不勾选：项圈露在衣服外面（与原站一致）。勾选后项圈会画到衣服底下 —— 穿高领衣服时就不会浮在领口上了。</small>' +
+      '</label>';
+    el.options.appendChild(wrap);
+
+    wrap.querySelector('input').addEventListener('change', function (e) {
+      state.collarUnderCloth = e.target.checked;
+      try { localStorage.setItem('shizuku-maker-collar-under', e.target.checked ? '1' : '0'); } catch (err) { /* 无痕模式忽略 */ }
+      render();
+      el.status.textContent = e.target.checked ? '项圈会藏在衣服下面' : '项圈露在衣服外面';
+    });
+  }
+
   /* ---------------------------------------------------------- 交互 */
   function pickItem(item) {
     var partIndex = state.activePart;
@@ -179,7 +226,7 @@
       itmId: item.itmId,
       cId: original.cId
     };
-    buildItems(); buildColors(); render();
+    buildItems(); buildColors(); buildOptions(); render();
     el.status.textContent = '「' + part.pNm + '」换好了';
   }
 
@@ -198,8 +245,8 @@
       if (!target) return;
       sel.url = target.url;
       sel.cId = target.cId;
-      buildColors(); render();
-      el.status.textContent = '换好颜色了';
+    buildColors(); buildOptions(); render();
+    el.status.textContent = '换好颜色了';
   }
 
 
@@ -222,8 +269,7 @@
         itmId: item.itmId,
         cId: original.cId
       };
-    });
-    buildTabs(); buildColors(); buildItems(); render();
+    }); buildTabs(); buildColors(); buildItems(); buildOptions(); render();
     el.status.textContent = '随机了一套，不满意可以再点一次～';
   }
 
@@ -231,8 +277,7 @@
     state.comb = state.parts.map(function (part, i) {
       var d = state.defaults[i] || {};
       return { url: d.url || '', x: d.x != null ? d.x : (part.x || 0), y: d.y != null ? d.y : (part.y || 0), itmId: d.itmId || 0, cId: d.cId || 0 };
-    });
-    buildTabs(); buildColors(); buildItems(); render();
+    }); buildTabs(); buildColors(); buildItems(); buildOptions(); render();
     el.status.textContent = '已经恢复成默认形象';
   }
 
@@ -375,7 +420,9 @@
       });
       state.ready = true;
       el.loading.hidden = true;
-      buildTabs(); buildColors(); buildItems(); render();
+      // 读取上次的「项圈层次」选择
+      try { state.collarUnderCloth = localStorage.getItem('shizuku-maker-collar-under') === '1'; } catch (e2) { state.collarUnderCloth = false; }
+      buildTabs(); buildColors(); buildItems(); buildOptions(); render();
       el.status.textContent = '素材已就绪：' + state.parts.length + ' 个部位，随便点着玩～';
       // 第一次进来自动弹教程（用户手动关过 / 已看过就不弹）
       // 延迟久一点：等首屏素材与缩略图都渲染完，避免用户点击时主线程还忙着加载
@@ -442,6 +489,7 @@
     if (!el.canvas) return;     // 这页没有工坊，直接退出
     el.tabs = document.getElementById('makerTabs');
     el.colors = document.getElementById('makerColors');
+    el.options = document.getElementById('makerOptions');
     el.items = document.getElementById('makerItems');
     el.status = document.getElementById('makerStatus');
     el.loading = document.getElementById('makerLoading');
