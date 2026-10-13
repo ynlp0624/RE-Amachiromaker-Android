@@ -21,6 +21,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -441,18 +442,55 @@ private fun PickerPane(
                     onPick = { state.selectColour(index, it) }
                 )
             }
+
+            // 「项圈层次」选项：只有正在编辑项圈时才出现
+            if (part.pNm == "チョーカー") {
+                CollarLayerOption(
+                    checked = state.collarUnderCloth,
+                    onToggle = { state.applyCollarUnderCloth(it) }
+                )
+            }
         }
     }
 }
 
-/** 生成 SVG：每个部位一个带名字的图层组，顺序与原站一致（按 layerComb 数组顺序）。 */
+/**
+ * 让用户自己决定要项圈还是让衣服遮住脖子：
+ * 不勾选 = 原站行为（项圈露在衣服外面）；勾选后项圈画到衣服底下。
+ */
+@Composable
+private fun CollarLayerOption(checked: Boolean, onToggle: (Boolean) -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 12.dp),
+        verticalAlignment = Alignment.Top
+    ) {
+        Checkbox(checked = checked, onCheckedChange = onToggle)
+        Column(Modifier.padding(start = 2.dp, top = 10.dp)) {
+            Text(
+                text = "让衣服遮住项圈",
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Text(
+                text = "不勾选：项圈露在衣服外面（与原站一致）。勾选后项圈会画到衣服底下——穿高领衣服时就不会浮在领口上了。",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 2.dp)
+            )
+        }
+    }
+}
+
+/** 生成 SVG：每个部位一个带名字的图层组，顺序遵循用户选择（默认原站数组顺序）。 */
 private fun buildSvgBytes(state: MakerState, store: AssetStore): ByteArray {
     val layers = ArrayList<SvgLayer>()
-    state.parts.forEachIndexed { index, part ->
-        val selection = state.selections.getOrNull(index) ?: return@forEachIndexed
-        if (selection.url.isEmpty()) return@forEachIndexed
-        val bitmap = store.decodeBitmap(selection.url) ?: return@forEachIndexed
-        val cropped = cropToCanvas(bitmap, selection.x, selection.y) ?: return@forEachIndexed
+    for (index in drawOrderFor(state)) {
+        val part = state.parts.getOrNull(index) ?: continue
+        val selection = state.selections.getOrNull(index) ?: continue
+        if (selection.url.isEmpty()) continue
+        val bitmap = store.decodeBitmap(selection.url) ?: continue
+        val cropped = cropToCanvas(bitmap, selection.x, selection.y) ?: continue
         layers.add(
             SvgLayer(
                 name = part.pNm.ifBlank { "layer-$index" },
@@ -465,14 +503,27 @@ private fun buildSvgBytes(state: MakerState, store: AssetStore): ByteArray {
     return SvgWriter.write(Compositor.CANVAS_SIZE, Compositor.CANVAS_SIZE, layers)
 }
 
+/** 导出用的绘制顺序：默认 0..n-1；打开「让衣服遮住项圈」时把项圈挪到衣服之前。 */
+private fun drawOrderFor(state: MakerState): List<Int> {
+    val size = state.parts.size
+    val base = (0 until size).toList()
+    if (!state.collarUnderCloth || size <= 17) return base
+    val order = base.toMutableList()
+    order.remove(17)
+    val clothPos = order.indexOf(16)
+    order.add(if (clothPos >= 0) clothPos else order.size, 17)
+    return order
+}
+
 /** Builds the layered PSD: one cropped layer per part, plus the flattened preview. */
 private fun buildPsdBytes(state: MakerState, store: AssetStore): ByteArray {
     val layers = ArrayList<PsdLayer>()
-    state.parts.forEachIndexed { index, part ->
-        val selection = state.selections.getOrNull(index) ?: return@forEachIndexed
-        if (selection.url.isEmpty()) return@forEachIndexed
-        val bitmap = store.decodeBitmap(selection.url) ?: return@forEachIndexed
-        val cropped = cropToCanvas(bitmap, selection.x, selection.y) ?: return@forEachIndexed
+    for (index in drawOrderFor(state)) {
+        val part = state.parts.getOrNull(index) ?: continue
+        val selection = state.selections.getOrNull(index) ?: continue
+        if (selection.url.isEmpty()) continue
+        val bitmap = store.decodeBitmap(selection.url) ?: continue
+        val cropped = cropToCanvas(bitmap, selection.x, selection.y) ?: continue
         layers.add(
             PsdLayer(
                 name = part.pNm.ifBlank { "layer-$index" },
