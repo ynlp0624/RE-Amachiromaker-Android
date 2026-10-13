@@ -191,8 +191,8 @@
       // GitCode 的 CDN 不带 CORS，前端读不到字节数；样本大小已知，改用「no-cors 下载计时」估算速度
       noCors: true,
       probeBytes: 524288,
-      probe: 'https://api.gitcode.com/api/v5/repos/gcw_YiSvwnI0/RE-Amachiromaker-Android/releases/v1.0.3/attach_files/speedtest.bin/download',
-      apk: 'https://gitcode.com/gcw_YiSvwnI0/RE-Amachiromaker-Android/releases/download/v1.0.3/RE-Amachiromaker-v1.0.3-android.apk'
+      probe: 'https://api.gitcode.com/api/v5/repos/gcw_YiSvwnI0/RE-Amachiromaker-Android/releases/v1.0.4/attach_files/speedtest.bin/download',
+      apk: 'https://gitcode.com/gcw_YiSvwnI0/RE-Amachiromaker-Android/releases/download/v1.0.4/RE-Amachiromaker-v1.0.4-android.apk'
     },
     { id: 'srv3', label: '主节点 · 独立线路', base: 'https://gallery.shizuku.plus/' },
     { id: 'srv2', label: '镜像节点 · 备用线路', base: 'https://gallery-s2.shizuku.plus/' },
@@ -201,17 +201,17 @@
       label: 'GitHub 源 · 官方直连',
       // 测速走 raw（带 CORS），下载走 Release 直链；两者都是 GitHub 官方域名
       base: 'https://raw.githubusercontent.com/ynlp0624/RE-Amachiromaker-Android/main/',
-      apk: 'https://github.com/ynlp0624/RE-Amachiromaker-Android/releases/download/v1.0.3/RE-Amachiromaker-v1.0.3-android.apk'
+      apk: 'https://github.com/ynlp0624/RE-Amachiromaker-Android/releases/download/v1.0.4/RE-Amachiromaker-v1.0.4-android.apk'
     },
     {
       id: 'github-proxy',
       label: 'GitHub 源 · 加速代理（备选）',
       // 直连被阻断时才用得上，走 gh-proxy 转发
       base: 'https://gh-proxy.com/https://raw.githubusercontent.com/ynlp0624/RE-Amachiromaker-Android/main/',
-      apk: 'https://gh-proxy.com/https://github.com/ynlp0624/RE-Amachiromaker-Android/releases/download/v1.0.3/RE-Amachiromaker-v1.0.3-android.apk'
+      apk: 'https://gh-proxy.com/https://github.com/ynlp0624/RE-Amachiromaker-Android/releases/download/v1.0.4/RE-Amachiromaker-v1.0.4-android.apk'
     }
   ];
-  var APK_PATH = 'assets/download/RE-Amachiromaker-v1.0.3-android.apk';
+  var APK_PATH = 'assets/download/RE-Amachiromaker-v1.0.4-android.apk';
   var PROBE_URL = 'speedtest.bin';
   var PROBE_TIMEOUT = 7000;      // 单个节点最多等 7 秒
   var PROBE_DEADLINE = 5500;     // 到点即汇总，不再等慢节点
@@ -357,7 +357,7 @@
     var url = apkUrlOf(mirror);
     var a = document.createElement('a');
     a.href = url;
-    a.setAttribute('download', 'RE-Amachiromaker-v1.0.3-android.apk');
+    a.setAttribute('download', 'RE-Amachiromaker-v1.0.4-android.apk');
     a.rel = 'noopener';
     document.body.appendChild(a);
     a.click();
@@ -460,7 +460,7 @@
       if (MIRRORS[i].id === best) mirror = MIRRORS[i];
     }
     if (!mirror) return;
-    var links = document.querySelectorAll('a[href$="RE-Amachiromaker-v1.0.3-android.apk"]');
+    var links = document.querySelectorAll('a[href$="RE-Amachiromaker-v1.0.4-android.apk"]');
     Array.prototype.forEach.call(links, function (a) {
       var target = apkUrlOf(mirror);
       if (a.href !== target) a.href = target;
