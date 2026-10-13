@@ -11,9 +11,9 @@
 <meta property="og:description" content="把下线的捏脸网站重做成安卓原生应用：Kotlin + Jetpack Compose，无 WebView 套壳，25 个部位、1111 张贴图内置，支持导出 PNG 与分层 PSD。">
 <meta property="og:image" content="assets/img/shizuku-avatar.png">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="assets/img/favicon.png?v=20261013a">
-<link rel="stylesheet" href="assets/css/fontawesome.min.css?v=20261013a">
-<link rel="stylesheet" href="assets/css/style.css?v=20261013a">
+<link rel="icon" href="assets/img/favicon.png?v=20261013b">
+<link rel="stylesheet" href="assets/css/fontawesome.min.css?v=20261013b">
+<link rel="stylesheet" href="assets/css/style.css?v=20261013b">
 </head>
 <body>
 <a class="skip-link" href="#main">跳到主要内容</a>
@@ -66,7 +66,7 @@
           25 个部位、1111 张贴图全部打包进安装包，<strong>没有网络请求、没有 WebView</strong>。
         </p>
         <div class="hero__cta">
-          <a class="btn btn--primary btn--lg" href="assets/download/RE-Amachiromaker-v1.0.3-android.apk" download>
+          <a class="btn btn--primary btn--lg" href="assets/download/RE-Amachiromaker-v1.0.4-android.apk" download>
             <i class="fa-solid fa-download"></i><span>下载 APK</span>
           </a>
           <a class="btn btn--ghost btn--lg" href="#gallery">
@@ -74,7 +74,7 @@
           </a>
         </div>
         <ul class="hero__meta">
-          <li><i class="fa-solid fa-tag"></i> v1.0.3</li>
+          <li><i class="fa-solid fa-tag"></i> v1.0.4</li>
           <li><i class="fa-solid fa-weight-hanging"></i> 39.15 MB</li>
           <li><i class="fa-solid fa-mobile-screen"></i> Android 7.0+</li>
           <li><i class="fa-solid fa-circle-check"></i> 无网络权限</li>
@@ -290,17 +290,17 @@
       <div class="download__main">
         <span class="download__icon"><i class="fa-brands fa-android"></i></span>
         <div class="download__info">
-          <h3>RE-Amachiromaker v1.0.3</h3>
+          <h3>RE-Amachiromaker v1.0.4</h3>
           <p class="muted">Android 7.0 及以上 · 39.15 MB · 本地签名（非商店包，安装时选择「仍要安装」即可）</p>
           <div class="hash">
             <i class="fa-solid fa-fingerprint"></i>
-            <code>SHA-256 47404bb8859d2cbb88f0a022dee6facada3387cb9779d82d02ec2c55ee99962a</code>
-            <button class="copy-btn" type="button" data-copy="47404bb8859d2cbb88f0a022dee6facada3387cb9779d82d02ec2c55ee99962a">
+            <code>SHA-256 714b0f88f6e2b1bc0671e6e7799c1911ce31966f2c8814c09eb44bd33d1546bc</code>
+            <button class="copy-btn" type="button" data-copy="714b0f88f6e2b1bc0671e6e7799c1911ce31966f2c8814c09eb44bd33d1546bc">
               <i class="fa-solid fa-copy"></i><span>复制</span>
             </button>
           </div>
         </div>
-        <a class="btn btn--primary btn--lg download__btn" href="assets/download/RE-Amachiromaker-v1.0.3-android.apk" download>
+        <a class="btn btn--primary btn--lg download__btn" href="assets/download/RE-Amachiromaker-v1.0.4-android.apk" download>
           <i class="fa-solid fa-download"></i><span>下载 APK</span>
         </a>
       </div>
@@ -351,9 +351,21 @@
     <ol class="timeline">
       <li class="timeline__item">
         <div class="timeline__head">
+          <span class="timeline__ver">v1.0.4</span>
+          <span class="timeline__date">2026-10-13</span>
+          <span class="badge badge--latest">最新</span>
+        </div>
+        <ul class="timeline__list">
+          <li><span class="tag tag--new">新增</span><span><b>「让衣服遮住项圈」选项</b>：编辑项圈时可以看到这个开关。不勾选＝项圈露在衣服外面（默认，与原站一致）；勾选后项圈会画到衣服底下 —— 穿高领衣服时就不会浮在领口外面了。</span></li>
+          <li><span class="tag tag--new">新增</span><span>网页版捏脸工坊同步支持该选项，选择会记在浏览器里。</span></li>
+          <li><span class="tag tag--fix">优化</span><span>PNG 预览、PSD 与 SVG 导出都遵循该开关，四处效果一致。</span></li>
+        </ul>
+      </li>
+
+      <li class="timeline__item">
+        <div class="timeline__head">
           <span class="timeline__ver">v1.0.3</span>
           <span class="timeline__date">2026-10-12</span>
-          <span class="badge badge--latest">最新</span>
         </div>
         <ul class="timeline__list">
           <li><span class="tag tag--change">变更</span><span><b>渲染逻辑与网页原站对齐</b>：撤掉此前额外添加的图层顺序修正与后发补画，恢复为原站的「按数组顺序逐层叠加」，输出与原站逐像素一致。</span></li>
@@ -774,7 +786,7 @@
 
 <button class="to-top" id="toTop" type="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up"></i></button>
 
-<script src="assets/js/app.js?v=20261013a"></script>
-<script src="assets/js/maker.js?v=20261013a"></script>
+<script src="assets/js/app.js?v=20261013b"></script>
+<script src="assets/js/maker.js?v=20261013b"></script>
 </body>
 </html>
