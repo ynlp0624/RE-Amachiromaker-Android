@@ -19,6 +19,7 @@ import kotlinx.coroutines.withContext
 
 const val KEY_COMBINATION = "layerComb"
 const val KEY_THEME = "themeMode"
+const val KEY_COLLAR_UNDER = "collarUnderCloth"
 
 /**
  * Holds the whole maker state: the 25 part definitions, the current combination and the
@@ -49,6 +50,20 @@ class MakerState(
 
     var selectedTab by mutableStateOf(0)
 
+    /**
+     * 「让衣服遮住项圈」：默认关闭 = 原站行为（项圈露在衣服外）。
+     * 打开后项圈会画到衣服底下，穿高领衣服时就不会浮在领口外面。
+     */
+    var collarUnderCloth by mutableStateOf(false)
+        private set
+
+    fun applyCollarUnderCloth(value: Boolean) {
+        if (collarUnderCloth == value) return
+        collarUnderCloth = value
+        prefs.edit().putBoolean(KEY_COLLAR_UNDER, value).apply()
+        refreshPreview()
+    }
+
     suspend fun bootstrap() {
         try {
             val loadedParts = store.loadParts()
@@ -60,6 +75,7 @@ class MakerState(
 
             parts = loadedParts
             selections = align(restored ?: defaults, loadedParts.size)
+            collarUnderCloth = prefs.getBoolean(KEY_COLLAR_UNDER, false)
             isReady = true
             refreshPreview()
         } catch (t: Throwable) {
@@ -91,10 +107,11 @@ class MakerState(
 
     fun refreshPreview() {
         val snapshot = selections
+        val collarUnder = collarUnderCloth
         previewJob?.cancel()
         previewJob = scope.launch {
             val bitmap = withContext(Dispatchers.Default) {
-                Compositor.compose(snapshot) { url -> store.decodeBitmap(url) }
+                Compositor.compose(snapshot, Compositor.CANVAS_SIZE, collarUnder) { url -> store.decodeBitmap(url) }
             }
             preview = bitmap
         }
