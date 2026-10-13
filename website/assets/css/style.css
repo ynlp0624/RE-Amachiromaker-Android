@@ -511,6 +511,17 @@ html[data-theme="dark"] .maker__loading { background: rgba(20,26,36,.82); }
 }
 
 .maker__colors { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 14px; }
+
+/* 部位专属选项（目前只有「项圈层次」） */
+.maker__options:empty { display: none; }
+.maker__option {
+  display: flex; align-items: flex-start; gap: 10px; margin: 2px 0 16px;
+  padding: 12px 14px; border-radius: 12px;
+  background: var(--surface-2); border: 1px solid var(--border);
+}
+.maker__option input { margin: 2px 0 0; width: 16px; height: 16px; flex: none; accent-color: var(--primary); cursor: pointer; }
+.maker__option label { font-size: 13.5px; line-height: 1.6; cursor: pointer; color: var(--text); }
+.maker__option small { display: block; margin-top: 3px; font-size: 12px; color: var(--text-muted); }
 .maker__color {
   width: 30px; height: 30px; border-radius: 8px; cursor: pointer;
   border: 2px solid var(--border); padding: 0; transition: transform .14s, border-color .14s;
